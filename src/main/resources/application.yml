@@ -1,0 +1,25 @@
+spring:
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+    defer-datasource-initialization: true
+  datasource:
+    url: jdbc:mysql://localhost:3306/blog?allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+#  mail:
+#    host: smtp.naver.com
+#    port: 465
+#    username: qsdcv301@naver.com
+#    password:
+#    properties:
+#      mail.smtp.auth: true
+#      mail.smtp.ssl.enable: true
+
+#jwt:
+#  issuer:
+#  secret_key:
