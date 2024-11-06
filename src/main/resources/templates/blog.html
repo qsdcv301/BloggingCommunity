@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="ko">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,11 +8,7 @@
     <meta name="author" content="Mark Otto, Jacob Thornton, 그리고 Bootstrap 기여자들">
     <meta name="generator" content="Hugo 0.88.1">
     <title>Blog Template · Bootstrap v5.1</title>
-
     <link rel="canonical" href="https://getbootstrap.kr/docs/5.1/examples/blog/">
-
-
-
     <!-- Bootstrap core CSS -->
     <link href="/docs/5.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
@@ -24,7 +20,6 @@
     <link rel="mask-icon" href="/docs/5.1/assets/img/favicons/safari-pinned-tab.svg" color="#7952b3">
     <link rel="icon" href="/docs/5.1/assets/img/favicons/favicon.ico">
     <meta name="theme-color" content="#7952b3">
-
 
     <style>
         .bd-placeholder-img {
@@ -300,6 +295,8 @@
     <p>
         <a href="#">Back to top</a>
     </p>
+    <h1 th:text="${email}"></h1>
+    <h1 th:text="${name}"></h1>
 </footer>
 
 
