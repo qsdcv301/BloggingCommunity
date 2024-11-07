@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import taehyeon.com.blog.entity.Post;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Integer> {
+public interface PostRepository extends JpaRepository<Post, Long> {
 }

@@ -13,7 +13,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
 
-    public Comment findById(int id) {
+    public Comment findById(Long id) {
         return commentRepository.findById(id).orElse(null);
     }
 
@@ -21,13 +21,18 @@ public class CommentService {
         return commentRepository.findAll();
     }
 
-    public Comment save(Comment comment) {
+    public Comment create(Comment comment) {
         return commentRepository.save(comment);
     }
 
-    
+    public Comment update(Long id, Comment comment) {
+        Comment newComment = findById(id);
+        newComment.Builder(newComment.getId(), comment.getPostId(), comment.getUserId(), comment.getContent());
+        return commentRepository.save(newComment);
+    }
 
-    public void deleteById(int id) {
+    public void deleteById(Long id) {
         commentRepository.deleteById(id);
     }
+
 }

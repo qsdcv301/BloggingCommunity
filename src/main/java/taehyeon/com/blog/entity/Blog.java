@@ -1,34 +1,51 @@
 package taehyeon.com.blog.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 @Data
 @Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@DynamicInsert
+@DynamicUpdate
 @Table(name = "blog")
 public class Blog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(name = "user_id")
+    private Long userId;
 
+    @Column(name = "title")
     private String title;
 
+    @Column(name = "description")
     private String description;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    private Timestamp createdAt;
 
-    public Blog update(String title, String description) {
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+
+    @Builder
+    public void Builder(Long id, Long userId, String title, String description) {
+        this.id = id;
+        this.userId = userId;
         this.title = title;
         this.description = description;
-        return this;
     }
 
 }

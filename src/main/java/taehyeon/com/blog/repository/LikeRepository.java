@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository;
 import taehyeon.com.blog.entity.Like;
 
 @Repository
-public interface LikeRepository extends JpaRepository<Like, Integer> {
+public interface LikeRepository extends JpaRepository<Like, Long> {
 }

@@ -30,9 +30,6 @@ public class User implements UserDetails {
     @Column(name = "provider")
     private String provider;
 
-    @Column(name = "provider_id", unique = true)
-    private String providerId;
-
     @Column(name = "email")
     private String email;
 
@@ -46,22 +43,12 @@ public class User implements UserDetails {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @Column(name = "last_login")
-    @CreationTimestamp
-    private Timestamp lastLogin;
-
     @Builder
-    public User(String provider, String providerId, String email, String name, String password) {
+    public void Builder(Long id, String provider, String email, String name) {
+        this.id = id;
         this.provider = provider;
-        this.providerId = providerId;
         this.email = email;
         this.name = name;
-        this.password = password;
-    }
-
-    public User update(String name){
-        this.name = name;
-        return this;
     }
 
     @Override
