@@ -3,27 +3,30 @@ package taehyeon.com.blog.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import taehyeon.com.blog.entity.Blog;
 import taehyeon.com.blog.entity.User;
 import taehyeon.com.blog.service.BlogService;
 import taehyeon.com.blog.service.UserService;
 
 @RequiredArgsConstructor
-@Controller("/blog")
+@RequestMapping("/blog")
+@Controller
 public class BlogController {
 
     private final BlogService blogService;
 
     private final UserService userService;
 
+    @PostMapping("/findBlog")
+    public String findBlog(@RequestParam(name = "searchBlog") String email, Model model) {
+        return "redirect:/blog/"+email;
+    }
+
     @GetMapping("/{email}")
     public String userBlog(@PathVariable String email, Model model){
-        Blog blog = blogService.findById(userService.findByEmail(email).getId());
-        model.addAttribute("blog", blog);
+//        Blog blog = blogService.findById(userService.findByEmail(email).getId());
+//        model.addAttribute("blog", blog);
         model.addAttribute("email", email);
         return "blog";
     }
