@@ -11,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import taehyeon.com.blog.entity.CustomOAuth2User;
 import taehyeon.com.blog.entity.User;
@@ -46,11 +47,8 @@ public class UserController {
 
     @GetMapping("/loginSuccess")
     public String getLoginInfo(Model model, @AuthenticationPrincipal CustomOAuth2User principal) {
-        String name = principal.getName();
         String email = principal.getEmail();
-        model.addAttribute("name", name);
-        model.addAttribute("email", email);
-        return "blog";
+        return "redirect:/blog/" + email;
     }
 
 }
