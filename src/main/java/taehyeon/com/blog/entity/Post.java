@@ -11,6 +11,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Entity
@@ -41,9 +42,9 @@ public class Post {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @ManyToOne
+    @OneToMany
     @JoinColumn(name = "blog_id", referencedColumnName = "id")
-    private Blog blog;
+    private List<Blog> blog;
 
     @Builder
     public void Builder(Long id, Long blogId, String title, String content) {

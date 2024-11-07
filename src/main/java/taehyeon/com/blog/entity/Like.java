@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.util.List;
+
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -26,13 +28,13 @@ public class Like {
     @Column(name = "user_id")
     private Long userId;
 
-    @ManyToOne
+    @OneToMany
     @JoinColumn(name = "post_id", referencedColumnName = "id")
-    private Post post;
+    private List<Post> post;
 
-    @ManyToOne
+    @OneToMany
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    private List<User> user;
 
     @Builder
     public void Builder(Long id, Long postId, Long userId) {

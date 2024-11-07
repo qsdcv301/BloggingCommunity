@@ -10,6 +10,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @Entity
@@ -36,9 +37,9 @@ public class Blog {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @ManyToOne
+    @OneToMany
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    private List<User> user;
 
     @Builder
     public void Builder(Long id, Long userId, String title, String description) {

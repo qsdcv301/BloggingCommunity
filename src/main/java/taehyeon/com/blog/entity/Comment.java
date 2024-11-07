@@ -10,6 +10,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @Entity
@@ -36,13 +37,13 @@ public class Comment {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @ManyToOne
+    @OneToMany
     @JoinColumn(name = "post_id", referencedColumnName = "id")
-    private Post post;
+    private List<Post> post;
 
-    @ManyToOne
+    @OneToMany
     @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private User user;
+    private List<User> user;
 
     @Builder
     public void Builder(Long id, Long postId, Long userId, String content) {
