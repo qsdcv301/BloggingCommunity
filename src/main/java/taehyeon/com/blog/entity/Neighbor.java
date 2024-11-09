@@ -14,22 +14,22 @@ import java.util.List;
 @DynamicInsert
 @DynamicUpdate
 @Builder
-@Table(name = "like")
-public class Like {
+@Table(name = "neighbor")
+public class Neighbor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "post_id")
-    private Long postId;
+    @Column(name = "blog_id")
+    private Long blogId;
 
     @Column(name = "user_id")
     private Long userId;
 
     @OneToMany
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
-    private List<Post> post;
+    @JoinColumn(name = "blog_id", referencedColumnName = "id")
+    private List<Blog> blog;
 
     @OneToMany
     @JoinColumn(name = "user_id", referencedColumnName = "id")

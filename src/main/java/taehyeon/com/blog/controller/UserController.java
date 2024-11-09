@@ -13,15 +13,20 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import taehyeon.com.blog.entity.Blog;
 import taehyeon.com.blog.entity.CustomOAuth2User;
 import taehyeon.com.blog.entity.User;
+import taehyeon.com.blog.service.BlogService;
 import taehyeon.com.blog.service.UserService;
+
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @Controller
 public class UserController {
 
     private final UserService userService;
+    private final BlogService blogService;
 
     @GetMapping("/login")
     public String login() {
@@ -41,7 +46,8 @@ public class UserController {
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
-        new SecurityContextLogoutHandler().logout(request, response, SecurityContextHolder.getContext().getAuthentication());
+        new SecurityContextLogoutHandler().logout(request, response,
+                SecurityContextHolder.getContext().getAuthentication());
         return "redirect:/login";
     }
 
@@ -59,6 +65,9 @@ public class UserController {
                     .name(name)
                     .build();
             userService.create(newUser);
+        }
+        if (blogService.findByUserId(Objects.requireNonNull(findUser).getId()) == null) {
+            return "redirect:/blog/blogFirstSetting/" + email;
         }
         return "redirect:/blog/" + email;
     }

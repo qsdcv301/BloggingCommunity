@@ -42,4 +42,8 @@ public class CategoryService {
         return categoryRepository.countByBlogId(blogId);
     }
 
+    public List<Category> findAllByBlogId(Long blogId){
+        return categoryRepository.findAllByBlogId(blogId);
+    }
+
 }
