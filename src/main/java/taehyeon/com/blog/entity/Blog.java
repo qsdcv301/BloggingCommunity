@@ -23,9 +23,6 @@ public class Blog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
-
     @Column(name = "title")
     private String title;
 
@@ -35,5 +32,9 @@ public class Blog {
     @Column(name = "created_at")
     @CreationTimestamp
     private Timestamp createdAt;
+
+    @OneToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 
 }

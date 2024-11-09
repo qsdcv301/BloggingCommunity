@@ -29,7 +29,7 @@ public class BlogService {
     public Blog update(Long id, Blog blog) {
         Blog newBlog = Blog.builder()
                 .id(id)
-                .userId(blog.getUserId())
+                .user(blog.getUser())
                 .title(blog.getTitle())
                 .description(blog.getDescription())
                 .build();

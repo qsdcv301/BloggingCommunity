@@ -1,6 +1,7 @@
 package taehyeon.com.blog.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -10,8 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import taehyeon.com.blog.entity.*;
 import taehyeon.com.blog.service.*;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @RequiredArgsConstructor
 @RequestMapping("/blog")
@@ -28,13 +28,61 @@ public class BlogController {
 
     private final UserService userService;
 
+    private final CommentService commentService;
+
+    @PostMapping("/{email}/neighbor")
+    public ResponseEntity<Map<String, Boolean>> neighbor(@PathVariable String email,
+                                                         @RequestParam("myNeighbor") Boolean neighbor, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Boolean success = false;
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            Object principal = authentication.getPrincipal();
+            Blog blog = blogService.findByUserId(userService.findByEmail(email).getId());
+            // User 객체인지 CustomOAuth2User 객체인지 확인
+            if (principal instanceof User userData) {
+                if (neighbor) {
+                    Long neighborId =
+                            neighborService.findByBlogIdAndNeighborBlogId(blogService.findByUserId(userService.findByEmail(userData.getEmail()).getId()).getId(),
+                                    blog.getId()).getId();
+                    neighborService.delete(neighborId);
+                    success = true;
+                } else {
+                    Neighbor newNeighbor = Neighbor.builder()
+                            .neighborBlog(blog)
+                            .blog(blogService.findByUserId(userService.findByEmail(userData.getEmail()).getId()))
+                            .build();
+                    neighborService.create(newNeighbor);
+                    success = true;
+                }
+            } else if (principal instanceof CustomOAuth2User customOAuth2User) {
+                if (neighbor) {
+                    Long neighborId =
+                            neighborService.findByBlogIdAndNeighborBlogId(blogService.findByUserId(userService.findByEmail(customOAuth2User.getEmail()).getId()).getId(),
+                                    blog.getId()).getId();
+                    neighborService.delete(neighborId);
+                    success = true;
+                } else {
+                    Neighbor newNeighbor = Neighbor.builder()
+                            .neighborBlog(blog)
+                            .blog(blogService.findByUserId(userService.findByEmail(customOAuth2User.getEmail()).getId()))
+                            .build();
+                    neighborService.create(newNeighbor);
+                    success = true;
+                }
+            }
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success); // 실제 중복 여부에 따라 설정
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/random")
     public String blogRandom(Model model) {
         List<Blog> blogList = blogService.findAll();
         Random random = new Random();
         int randomIndex = random.nextInt(blogList.size());
         Blog randomBlog = blogList.get(randomIndex);
-        User user = userService.findById(randomBlog.getUserId());
+        User user = userService.findById(randomBlog.getUser().getId());
         String email = user.getEmail();
         return "redirect:/blog/" + email;
     }
@@ -46,16 +94,22 @@ public class BlogController {
 
     @GetMapping("/{email}/setting")
     public String blogSetting(@PathVariable String email, Model model) {
-        Blog blog = blogService.findById(userService.findByEmail(email).getId());
+        Blog blog = blogService.findByUserId(userService.findByEmail(email).getId());
         List<Neighbor> neighborList = neighborService.findAllByBlogId(blog.getId());
         List<Category> categoryList = categoryService.findAllByBlogId(blog.getId());
         List<Post> postList = postService.findAllByBlogId(blog.getId());
+        List<Comment> commentList = new ArrayList<>();
+        for (Post post : postList) {
+            commentList.addAll(commentService.findAllByPostId(post.getId()));
+        }
         User user = userService.findByEmail(email);
+        model.addAttribute("myPage", true);
         model.addAttribute("user", user);
         model.addAttribute("blog", blog);
         model.addAttribute("postList", postList);
         model.addAttribute("categoryList", categoryList);
         model.addAttribute("neighborList", neighborList);
+        model.addAttribute("commentList", commentList);
         return "/blog/setting";
     }
 
@@ -70,7 +124,7 @@ public class BlogController {
                                 @ModelAttribute Category category, Model model) {
         User user = userService.findByEmail(email);
         Blog newBlog = Blog.builder()
-                .userId(user.getId())
+                .user(user)
                 .title(blog.getTitle())
                 .description(blog.getDescription())
                 .build();
@@ -88,18 +142,31 @@ public class BlogController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             Object principal = authentication.getPrincipal();
+            Blog blog = blogService.findByUserId(userService.findByEmail(email).getId());
             // User 객체인지 CustomOAuth2User 객체인지 확인
             if (principal instanceof User userData) {
                 if (userData.getEmail().equals(email)) {
                     model.addAttribute("myPage", true);
                 } else {
                     model.addAttribute("myPage", false);
+                    if (neighborService.findByBlogIdAndNeighborBlogId(userService.findByEmail(userData.getEmail()).getId(),
+                            blog.getId()) != null) {
+                        model.addAttribute("myNeighbor", true);
+                    } else {
+                        model.addAttribute("myNeighbor", false);
+                    }
                 }
             } else if (principal instanceof CustomOAuth2User customOAuth2User) {
                 if (customOAuth2User.getEmail().equals(email)) {
                     model.addAttribute("myPage", true);
                 } else {
                     model.addAttribute("myPage", false);
+                    if (neighborService.findByBlogIdAndNeighborBlogId(userService.findByEmail(customOAuth2User.getEmail()).getId(),
+                            blog.getId()) != null) {
+                        model.addAttribute("myNeighbor", true);
+                    } else {
+                        model.addAttribute("myNeighbor", false);
+                    }
                 }
             }
         }

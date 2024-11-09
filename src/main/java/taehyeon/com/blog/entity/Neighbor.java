@@ -21,18 +21,12 @@ public class Neighbor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "blog_id")
-    private Long blogId;
-
-    @Column(name = "user_id")
-    private Long userId;
-
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "blog_id", referencedColumnName = "id")
-    private List<Blog> blog;
+    private Blog blog;
 
-    @OneToMany
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private List<User> user;
+    @ManyToOne
+    @JoinColumn(name = "neighborblog_id", referencedColumnName = "id")
+    private Blog neighborBlog;
 
 }

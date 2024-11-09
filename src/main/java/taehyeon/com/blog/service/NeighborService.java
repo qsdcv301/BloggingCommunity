@@ -25,11 +25,11 @@ public class NeighborService {
         return neighborRepository.save(like);
     }
 
-    public Neighbor update(Long id, Neighbor like) {
+    public Neighbor update(Long id, Neighbor neighbor) {
         Neighbor newLike = Neighbor.builder()
                 .id(id)
-                .blogId(like.getBlogId())
-                .userId(like.getUserId())
+                .blog(neighbor.getBlog())
+                .neighborBlog(neighbor.getNeighborBlog())
                 .build();
         return neighborRepository.save(newLike);
     }
@@ -42,4 +42,7 @@ public class NeighborService {
         return neighborRepository.findAllByBlogId(blogId);
     }
 
+    public Neighbor findByBlogIdAndNeighborBlogId(Long blogId, Long neighborBlogId) {
+        return neighborRepository.findByBlogIdAndNeighborBlogId(blogId, neighborBlogId).orElse(null);
+    }
 }

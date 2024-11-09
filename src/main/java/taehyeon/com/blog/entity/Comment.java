@@ -26,9 +26,6 @@ public class Comment {
     @Column(name = "post_id")
     private Long postId;
 
-    @Column(name = "user_id")
-    private Long userId;
-
     @Column(name = "content")
     private String content;
 
@@ -36,12 +33,8 @@ public class Comment {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @OneToMany
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
-    private List<Post> post;
-
-    @OneToMany
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private List<User> user;
+    @ManyToOne
+    @JoinColumn(name = "blog_id", referencedColumnName = "id")
+    private Blog blog;
 
 }

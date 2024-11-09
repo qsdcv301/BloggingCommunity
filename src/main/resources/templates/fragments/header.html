@@ -8,6 +8,10 @@
                 <a th:if="${myPage}" class="text-dark" th:href="@{/blog/{email}/setting(email=${email})}">
                     <i class="bi bi-gear"></i>
                 </a>
+                <a href="#" th:unless="${myPage}" class="text-dark" id="myNeighbor">
+                    <i class="bi bi-heart-fill" th:if="${myNeighbor}"></i>
+                    <i class="bi bi-heart" th:unless="${myNeighbor}"></i>
+                </a>
             </div>
             <div class="col-4 text-center">
                 <h2>Blogging Community</h2>

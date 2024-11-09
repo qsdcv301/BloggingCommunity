@@ -29,7 +29,7 @@ public class CommentService {
         Comment newComment = Comment.builder()
                 .id(id)
                 .postId(comment.getPostId())
-                .userId(comment.getUserId())
+                .blog(comment.getBlog())
                 .content(comment.getContent())
                 .build();
         return commentRepository.save(newComment);
@@ -37,6 +37,10 @@ public class CommentService {
 
     public void deleteById(Long id) {
         commentRepository.deleteById(id);
+    }
+
+    public List<Comment> findAllByPostId(Long postId) {
+        return commentRepository.findAllByPostId(postId);
     }
 
 }
