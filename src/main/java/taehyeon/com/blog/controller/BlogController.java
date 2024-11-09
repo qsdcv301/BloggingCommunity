@@ -90,7 +90,7 @@ public class BlogController {
     @GetMapping("/{email}/write")
     public String userBlogWrite(@PathVariable String email, Model model) {
         Blog blog = blogService.findById(userService.findByEmail(email).getId());
-        return "write";
+        return "/blog/write";
     }
 
     @PostMapping("/{email}/write")
