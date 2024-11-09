@@ -44,8 +44,23 @@ public class BlogController {
         return "redirect:/blog/" + email;
     }
 
-    @GetMapping("/blogFirstSetting/{email}")
+    @GetMapping("/{email}/setting")
     public String blogSetting(@PathVariable String email, Model model) {
+        Blog blog = blogService.findById(userService.findByEmail(email).getId());
+        List<Neighbor> neighborList = neighborService.findAllByBlogId(blog.getId());
+        List<Category> categoryList = categoryService.findAllByBlogId(blog.getId());
+        List<Post> postList = postService.findAllByBlogId(blog.getId());
+        User user = userService.findByEmail(email);
+        model.addAttribute("user", user);
+        model.addAttribute("blog", blog);
+        model.addAttribute("postList", postList);
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("neighborList", neighborList);
+        return "/blog/setting";
+    }
+
+    @GetMapping("/blogFirstSetting/{email}")
+    public String blogFirstSetting(@PathVariable String email, Model model) {
         model.addAttribute("email", email);
         return "blogFirstSetting";
     }

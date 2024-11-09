@@ -30,6 +30,7 @@ public class PostService {
                 .id(id)
                 .blogId(post.getBlogId())
                 .title(post.getTitle())
+                .summary(post.getSummary())
                 .content(post.getContent())
                 .category(post.getCategory())
                 .build();

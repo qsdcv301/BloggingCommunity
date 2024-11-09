@@ -7,6 +7,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,16 +35,19 @@ public class Post {
     @Column(name = "title")
     private String title;
 
+    @Column(name = "summary")
+    private String summary;
+
     @Column(name = "content")
     private String content;
 
     @Column(name = "created_at")
     @CreationTimestamp
-    private LocalDateTime createdAt;
+    private Timestamp createdAt;
 
     @Column(name = "updated_at")
     @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    private Timestamp updatedAt;
 
     @OneToMany
     @JoinColumn(name = "blog_id", referencedColumnName = "id")

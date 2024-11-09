@@ -17,7 +17,170 @@
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
+<div class="container">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar p-3">
+            <h5>관리 메뉴</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#">위로 가기</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#blog">블로그 관리</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#category">카테고리 관리</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#post">게시물 관리</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#comment">댓글 관리</a>
+                </li>
+            </ul>
+        </nav>
 
+        <!-- Main Content -->
+        <div role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4">
+            <h2 id="blog">블로그 관리</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>제목</th>
+                        <th>설명</th>
+                        <th>작업</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:text="${blog.title}">제목</td>
+                        <td th:text="${blog.description}">설명</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-primary">편집</button>
+                            <button class="btn btn-sm btn-danger">삭제</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-end">
+                    <a href="#" class="btn btn-sm btn-success">추가</a>
+                </div>
+            </div>
+            <h2 id="category">카테고리 관리</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>이름</th>
+                        <th>작업</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="category, index : ${categoryList}">
+                        <td th:text="${index.index+1}">번호</td>
+                        <td th:text="${category.name}">이름</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-primary">편집</button>
+                            <button class="btn btn-sm btn-danger">삭제</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-end">
+                    <a href="#" class="btn btn-sm btn-success">추가</a>
+                </div>
+            </div>
+            <h2 id="post">게시물 관리</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>요약</th>
+                        <th>작성일</th>
+                        <th>수정일</th>
+                        <th>작업</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="post, index : ${postList}">
+                        <td th:text="${index.index+1}">번호</td>
+                        <td th:text="${post.title}">제목</td>
+                        <td th:text="${post.summary}">요약</td>
+                        <td th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd')}">작성일</td>
+                        <td th:text="${#dates.format(post.updatedAt, 'yyyy-MM-dd')}">수정일</td>
+                        <td class="text-center">
+                            <a href="#" class="btn btn-sm btn-primary">편집</a>
+                            <a href="#" class="btn btn-sm btn-danger">삭제</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div class="d-flex justify-content-end">
+                    <a href="#" class="btn btn-sm btn-success">글쓰기</a>
+                </div>
+            </div>
+            <h2 id="comment">댓글 관리</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>게시물 제목</th>
+                        <th>작성자</th>
+                        <th>내용</th>
+                        <th>작성일</th>
+                        <th>작업</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>첫 번째 게시물</td>
+                        <td>사용자2</td>
+                        <td>좋은 글 감사합니다!</td>
+                        <td>2024-11-01</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger">삭제</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <h2 id="neighbor">이웃 관리</h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>이메일</th>
+                        <th>이름</th>
+                        <th>제목</th>
+                        <th>설명</th>
+                        <th>작업</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="neighbor, index:${neighborList}">
+                        <td th:text="index.index+1">번호</td>
+                        <td>첫 번째 게시물</td>
+                        <td>사용자2</td>
+                        <td>좋은 글 감사합니다!</td>
+                        <td>2024-11-01</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger">삭제</button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

@@ -49,8 +49,8 @@
                     <div class="col p-4 d-flex flex-column position-static">
                         <strong class="d-inline-block mb-2 text-primary" th:text="${post.category.name}">카테고리 이름</strong>
                         <h3 class="mb-0" th:text="${post.title}">포스트 제목</h3>
-                        <div class="mb-1 text-muted" th:text="${post.createdAt}">포스트 생성일</div>
-                        <p class="card-text mb-auto" th:text="${post.content}">포스트 내용</p>
+                        <div class="mb-1 text-muted" th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd')}">포스트 생성일</div>
+                        <p class="card-text mb-auto" th:text="${post.summary}">포스트 요약</p>
                         <a th:href="@{/blog/{email}/view(postId=${post.id}, email=${user.email})}" class="stretched-link">내용 보러가기</a>
                     </div>
                 </div>
