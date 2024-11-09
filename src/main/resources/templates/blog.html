@@ -80,7 +80,7 @@
                         <th:block th:if="${neighborList.isEmpty()}">
                             <li>
                                 <p>이웃이 없습니다.</p>
-                                <a href="#">랜덤 이웃찾기</a>
+                                <a th:if="${myPage}" href="/blog/random">랜덤 이웃찾기</a>
                             </li>
                         </th:block>
                         <th:block th:unless="${neighborList.isEmpty()}">

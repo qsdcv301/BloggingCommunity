@@ -11,6 +11,7 @@ import taehyeon.com.blog.entity.*;
 import taehyeon.com.blog.service.*;
 
 import java.util.List;
+import java.util.Random;
 
 @RequiredArgsConstructor
 @RequestMapping("/blog")
@@ -26,6 +27,17 @@ public class BlogController {
     private final PostService postService;
 
     private final UserService userService;
+
+    @GetMapping("/random")
+    public String blogRandom(Model model) {
+        List<Blog> blogList = blogService.findAll();
+        Random random = new Random();
+        int randomIndex = random.nextInt(blogList.size());
+        Blog randomBlog = blogList.get(randomIndex);
+        User user = userService.findById(randomBlog.getUserId());
+        String email = user.getEmail();
+        return "redirect:/blog/" + email;
+    }
 
     @PostMapping("/findBlog")
     public String findBlog(@RequestParam(name = "searchBlog") String email, Model model) {
