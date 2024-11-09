@@ -79,12 +79,23 @@ public class BlogController {
         Blog blog = blogService.findById(userService.findByEmail(email).getId());
         List<Neighbor> neighborList = neighborService.findAllByBlogId(blog.getId());
         List<Category> categoryList = categoryService.findAllByBlogId(blog.getId());
+        List<Post> postList = postService.findAllByBlogId(blog.getId());
         User user = userService.findByEmail(email);
-        model.addAttribute("categoryList", categoryList);
         model.addAttribute("user", user);
         model.addAttribute("blog", blog);
+        model.addAttribute("postList", postList);
+        model.addAttribute("categoryList", categoryList);
         model.addAttribute("neighborList", neighborList);
         return "blog";
+    }
+
+    @GetMapping("/{email}/view")
+    public String userBlogView(@PathVariable String email, @RequestParam(name = "postId") Long postId, Model model) {
+        Blog blog = blogService.findById(userService.findByEmail(email).getId());
+        Post post = postService.findById(postId);
+        model.addAttribute("blog", blog);
+        model.addAttribute("post", post);
+        return "/blog/view";
     }
 
     @GetMapping("/{email}/write")
@@ -98,20 +109,20 @@ public class BlogController {
         return "redirect:/blog/" + email;
     }
 
-    @PostMapping("/{email}/delete")
-    public String userBlogDelete(@PathVariable String email, Long id, Model model) {
-        Blog blog = blogService.findById(userService.findByEmail(email).getId());
-        return "redirect:/blog/" + email;
-    }
-
     @GetMapping("/{email}/update")
     public String userBlogUpdate(@PathVariable String email, Model model) {
         Blog blog = blogService.findById(userService.findByEmail(email).getId());
-        return "update";
+        return "/blog/update";
     }
 
     @PostMapping("/{email}/update")
     public String userBlogUpdate(@PathVariable String email, @ModelAttribute Blog blog, Model model) {
+        return "redirect:/blog/" + email;
+    }
+
+    @PostMapping("/{email}/delete")
+    public String userBlogDelete(@PathVariable String email, Long id, Model model) {
+        Blog blog = blogService.findById(userService.findByEmail(email).getId());
         return "redirect:/blog/" + email;
     }
 

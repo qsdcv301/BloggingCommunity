@@ -31,12 +31,17 @@ public class PostService {
                 .blogId(post.getBlogId())
                 .title(post.getTitle())
                 .content(post.getContent())
+                .category(post.getCategory())
                 .build();
         return postRepository.save(newPost);
     }
 
     public void delete(Long id) {
         postRepository.deleteById(id);
+    }
+
+    public List<Post> findAllByBlogId(Long blogId) {
+        return postRepository.findAllByBlogId(blogId);
     }
 
 }

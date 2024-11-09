@@ -27,6 +27,10 @@ public class Post {
     @Column(name = "blog_id")
     private Long blogId;
 
+    @OneToOne
+    @JoinColumn(name = "category_id", referencedColumnName = "id")
+    private Category category;
+
     @Column(name = "title")
     private String title;
 

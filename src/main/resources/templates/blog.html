@@ -8,7 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
     <link href="/css/bootstrap.min.css" rel="stylesheet"/>
-        <link href="/css/style.css" rel="stylesheet"/>
+    <link href="/css/style.css" rel="stylesheet"/>
     <script src="/js/jquery-1.12.4.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/popper.min.js"></script>
@@ -32,39 +32,36 @@
             </h3>
             <div class="nav-scroller pb-3 py-2 mb-2 border-bottom">
                 <nav class="nav d-flex justify-content-start">
-                    <button class="btn btn-primary px-3 mx-2" href="#" th:each="category : ${categoryList}"
+                    <button class="btn btn-primary px-3 mx-2"
+                            th:text="전체">전체 카테고리
+                    </button>
+                    <!--      카테고리 최대 6개 제한      -->
+                    <button class="btn btn-primary px-3 mx-2" th:each="category : ${categoryList}"
                             th:text="${category.name}">카테고리 이름
                     </button>
-                    <!--      카테고리 최대 7개 제한      -->
+                    <!--      카테고리 최대 6개 제한      -->
                 </nav>
             </div>
             <!--      루프 시작      -->
-            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                <div class="col p-4 d-flex flex-column position-static">
-                    <strong class="d-inline-block mb-2 text-primary">World</strong>
-                    <h3 class="mb-0">Featured post</h3>
-                    <div class="mb-1 text-muted">Nov 12</div>
-                    <p class="card-text mb-auto">This is a wider card with supporting text below as a natural lead-in to
-                        additional content.</p>
-                    <a href="#" class="stretched-link">내용 보러가기</a>
+            <th:block th:unless="${postList.isEmpty()}">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative"
+                th:each="post : ${postList}">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary" th:text="${post.category.name}">카테고리 이름</strong>
+                        <h3 class="mb-0" th:text="${post.title}">포스트 제목</h3>
+                        <div class="mb-1 text-muted" th:text="${post.createdAt}">포스트 생성일</div>
+                        <p class="card-text mb-auto" th:text="${post.content}">포스트 내용</p>
+                        <a th:href="@{/blog/{email}/view(postId=${post.id}, email=${user.email})}" class="stretched-link">내용 보러가기</a>
+                    </div>
                 </div>
-            </div>
-
-            <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
-                <div class="col p-4 d-flex flex-column position-static">
-                    <strong class="d-inline-block mb-2 text-success">Design</strong>
-                    <h3 class="mb-0">Post title</h3>
-                    <div class="mb-1 text-muted">Nov 11</div>
-                    <p class="mb-auto">This is a wider card with supporting text below as a natural lead-in to
-                        additional content.</p>
-                    <a href="#" class="stretched-link">내용 보러가기</a>
-                </div>
-            </div>
+            </th:block>
             <!--      루프 끝 제한 5개?      -->
+            <nav class="d-flex justify-content-center">
+                <p>페이징</p>
+            </nav>
             <nav th:if="${myPage}" class="d-flex justify-content-end">
                 <a class="btn btn-outline-success" th:href="@{/blog/{email}/write(email=${user.email})}">글쓰기</a>
             </nav>
-
         </div>
 
         <div class="col-md-4">
@@ -99,14 +96,14 @@
                         </th:block>
                     </ol>
                 </div>
-<!--                <div class="p-4">-->
-<!--                    <h4 class="fst-italic">Elsewhere</h4>-->
-<!--                    <ol class="list-unstyled">-->
-<!--                        <li><a href="#">GitHub</a></li>-->
-<!--                        <li><a href="#">Twitter</a></li>-->
-<!--                        <li><a href="#">Facebook</a></li>-->
-<!--                    </ol>-->
-<!--                </div>-->
+                <!--                <div class="p-4">-->
+                <!--                    <h4 class="fst-italic">Elsewhere</h4>-->
+                <!--                    <ol class="list-unstyled">-->
+                <!--                        <li><a href="#">GitHub</a></li>-->
+                <!--                        <li><a href="#">Twitter</a></li>-->
+                <!--                        <li><a href="#">Facebook</a></li>-->
+                <!--                    </ol>-->
+                <!--                </div>-->
             </div>
         </div>
     </div>

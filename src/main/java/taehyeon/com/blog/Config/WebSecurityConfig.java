@@ -21,6 +21,7 @@ import taehyeon.com.blog.service.UserDetailService;
 public class WebSecurityConfig {
 
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
+
     private final UserDetailService userService;
 
     // 스프링 시큐리티 기능 비활성화 구역

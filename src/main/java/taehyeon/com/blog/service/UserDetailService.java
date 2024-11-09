@@ -9,7 +9,7 @@ import taehyeon.com.blog.repository.UserRepository;
 
 @RequiredArgsConstructor
 @Service
-public class UserDetailService  implements UserDetailsService {
+public class UserDetailService implements UserDetailsService {
 
     private final UserRepository userRepository;
 

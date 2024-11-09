@@ -36,8 +36,4 @@ public class Blog {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    @OneToMany
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private List<User> user;
-
 }
