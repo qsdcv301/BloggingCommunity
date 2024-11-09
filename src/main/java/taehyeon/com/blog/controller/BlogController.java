@@ -1,13 +1,13 @@
 package taehyeon.com.blog.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import taehyeon.com.blog.entity.Blog;
-import taehyeon.com.blog.entity.Category;
-import taehyeon.com.blog.entity.Neighbor;
-import taehyeon.com.blog.entity.User;
+import taehyeon.com.blog.entity.*;
 import taehyeon.com.blog.service.*;
 
 import java.util.List;
@@ -47,12 +47,35 @@ public class BlogController {
                 .title(blog.getTitle())
                 .description(blog.getDescription())
                 .build();
-        blogService.create(newBlog);
+        Blog createBlog = blogService.create(newBlog);
+        Category newCategory = Category.builder()
+                .blogId(createBlog.getId())
+                .name(category.getName())
+                .build();
+        categoryService.create(newCategory);
         return "redirect:/blog/" + email;
     }
 
     @GetMapping("/{email}")
     public String userBlog(@PathVariable String email, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            Object principal = authentication.getPrincipal();
+            // User 객체인지 CustomOAuth2User 객체인지 확인
+            if (principal instanceof User userData) {
+                if (userData.getEmail().equals(email)) {
+                    model.addAttribute("myPage", true);
+                } else {
+                    model.addAttribute("myPage", false);
+                }
+            } else if (principal instanceof CustomOAuth2User customOAuth2User) {
+                if (customOAuth2User.getEmail().equals(email)) {
+                    model.addAttribute("myPage", true);
+                } else {
+                    model.addAttribute("myPage", false);
+                }
+            }
+        }
         Blog blog = blogService.findById(userService.findByEmail(email).getId());
         List<Neighbor> neighborList = neighborService.findAllByBlogId(blog.getId());
         List<Category> categoryList = categoryService.findAllByBlogId(blog.getId());

@@ -5,7 +5,7 @@
     <div class="container py-3 my-2">
         <div class="row flex-nowrap justify-content-between align-items-center">
             <div class="col-4 pt-1">
-                <a class="text-dark" th:href="@{/blog/{email}/setting(email=${email})}">
+                <a th:if="${myPage}" class="text-dark" th:href="@{/blog/{email}/setting(email=${email})}">
                     <i class="bi bi-gear"></i>
                 </a>
             </div>

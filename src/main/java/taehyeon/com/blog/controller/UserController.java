@@ -3,6 +3,8 @@ package taehyeon.com.blog.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -39,9 +41,14 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signup(@ModelAttribute User user) {
-        userService.create(user);
-        return "redirect:/login";
+    public String signup(@ModelAttribute User user, Model model) {
+        if (userService.findByEmail(user.getEmail()) == null) {
+            userService.create(user);
+            return "redirect:/login";
+        } else {
+            model.addAttribute("error", "이메일이 중복되어 생성이 불가합니다.");
+            return "error/error";
+        }
     }
 
     @GetMapping("/logout")
@@ -52,12 +59,12 @@ public class UserController {
     }
 
     @GetMapping("/loginSuccess")
-    public String getLoginInfo(Model model, @AuthenticationPrincipal CustomOAuth2User principal) {
-        String provider = principal.getProvider();
-        String email = principal.getEmail();
-        String name = principal.getName();
-        User findUser = userService.findByEmailAndProvider(email, provider);
-        if (findUser == null) {
+    public String getLoginInfo(@AuthenticationPrincipal CustomOAuth2User user, Model model) {
+        String provider = user.getProvider();
+        String email = user.getEmail();
+        String name = user.getName();
+        User findUser = userService.findByEmail(email);
+        if (findUser.getEmail() == null) {
             // 새로운 User 객체 생성
             User newUser = User.builder()
                     .provider(provider)
@@ -65,6 +72,7 @@ public class UserController {
                     .name(name)
                     .build();
             userService.create(newUser);
+            findUser = newUser;
         }
         if (blogService.findByUserId(Objects.requireNonNull(findUser).getId()) == null) {
             return "redirect:/blog/blogFirstSetting/" + email;

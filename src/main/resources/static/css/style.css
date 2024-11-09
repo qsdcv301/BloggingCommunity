@@ -1,0 +1,9 @@
+.blog-title-background{
+    background-image: url("/images/title.jpg");
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.blog-title{
+    opacity: 50%;
+}
