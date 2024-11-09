@@ -26,8 +26,12 @@ public class CommentService {
     }
 
     public Comment update(Long id, Comment comment) {
-        Comment newComment = findById(id);
-        newComment.Builder(newComment.getId(), comment.getPostId(), comment.getUserId(), comment.getContent());
+        Comment newComment = Comment.builder()
+                .id(id)
+                .postId(comment.getPostId())
+                .userId(comment.getUserId())
+                .content(comment.getContent())
+                .build();
         return commentRepository.save(newComment);
     }
 

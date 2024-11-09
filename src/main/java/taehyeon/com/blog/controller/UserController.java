@@ -47,7 +47,19 @@ public class UserController {
 
     @GetMapping("/loginSuccess")
     public String getLoginInfo(Model model, @AuthenticationPrincipal CustomOAuth2User principal) {
+        String provider = principal.getProvider();
         String email = principal.getEmail();
+        String name = principal.getName();
+        User findUser = userService.findByEmailAndProvider(email, provider);
+        if (findUser == null) {
+            // 새로운 User 객체 생성
+            User newUser = User.builder()
+                    .provider(provider)
+                    .email(email)
+                    .name(name)
+                    .build();
+            userService.create(newUser);
+        }
         return "redirect:/blog/" + email;
     }
 

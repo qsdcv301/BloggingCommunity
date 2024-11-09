@@ -7,6 +7,7 @@ import taehyeon.com.blog.entity.User;
 import taehyeon.com.blog.repository.UserRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
@@ -30,8 +31,12 @@ public class UserService {
     }
 
     public User update(User user) {
-        User newUser = findById(user.getId());
-        newUser.Builder(newUser.getId(), user.getProvider(), user.getEmail(), user.getName());
+        User newUser =User.builder()
+                .id(user.getId())
+                .provider(user.getProvider())
+                .email(user.getEmail())
+                .name(user.getName())
+                .build();
         return userRepository.save(newUser);
     }
 
@@ -41,6 +46,10 @@ public class UserService {
 
     public User findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+
+    public User findByEmailAndProvider(String email, String provider) {
+        return userRepository.findByEmailAndProvider(email, provider).orElse(null);
     }
 
 }

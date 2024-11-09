@@ -26,8 +26,11 @@ public class LikeService {
     }
 
     public Like update(Long id, Like like) {
-        Like newLike = findById(id);
-        newLike.Builder(newLike.getId(), like.getPostId(), like.getUserId());
+        Like newLike = Like.builder()
+                .id(id)
+                .postId(like.getPostId())
+                .userId(like.getUserId())
+                .build();
         return likeRepository.save(newLike);
     }
 

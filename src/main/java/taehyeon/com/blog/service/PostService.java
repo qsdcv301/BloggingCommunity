@@ -26,8 +26,12 @@ public class PostService {
     }
 
     public Post update(Long id, Post post) {
-        Post newPost = findById(id);
-        newPost.Builder(newPost.getId(), post.getBlogId(), post.getTitle(), post.getContent());
+        Post newPost = Post.builder()
+                .id(id)
+                .blogId(post.getBlogId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .build();
         return postRepository.save(newPost);
     }
 

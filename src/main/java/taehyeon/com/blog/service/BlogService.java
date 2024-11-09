@@ -27,8 +27,12 @@ public class BlogService {
     }
 
     public Blog update(Long id, Blog blog) {
-        Blog newBlog = findById(id);
-        newBlog.Builder(newBlog.getId(), blog.getUserId(), blog.getTitle(), blog.getDescription());
+        Blog newBlog = Blog.builder()
+                .id(id)
+                .userId(blog.getUserId())
+                .title(blog.getTitle())
+                .description(blog.getDescription())
+                .build();
         return blogRepository.save(newBlog);
     }
 
@@ -36,4 +40,7 @@ public class BlogService {
         blogRepository.deleteById(id);
     }
 
+    public Blog findByUserId(Long userId) {
+        return blogRepository.findByUserId(userId).orElse(null);
+    }
 }

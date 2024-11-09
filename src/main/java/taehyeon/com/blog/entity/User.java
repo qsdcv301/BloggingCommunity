@@ -1,10 +1,7 @@
 package taehyeon.com.blog.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -18,8 +15,10 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
+@Builder
 @Table(name = "user")
 public class User implements UserDetails {
 
@@ -42,14 +41,6 @@ public class User implements UserDetails {
     @Column(name = "created_at")
     @CreationTimestamp
     private Timestamp createdAt;
-
-    @Builder
-    public void Builder(Long id, String provider, String email, String name) {
-        this.id = id;
-        this.provider = provider;
-        this.email = email;
-        this.name = name;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

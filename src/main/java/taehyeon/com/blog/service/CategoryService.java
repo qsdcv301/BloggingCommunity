@@ -26,8 +26,11 @@ public class CategoryService {
     }
 
     public Category update(Long id,Category category){
-        Category newCategory = findById(id);
-        newCategory.Builder(newCategory.getId(), category.getBlogId(), category.getName());
+        Category newCategory = Category.builder()
+                .id(id)
+                .blogId(category.getBlogId())
+                .name(category.getName())
+                .build();
         return categoryRepository.save(newCategory);
     }
 

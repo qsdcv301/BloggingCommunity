@@ -1,10 +1,7 @@
 package taehyeon.com.blog.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
@@ -16,8 +13,10 @@ import java.util.List;
 @Data
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @DynamicInsert
 @DynamicUpdate
+@Builder
 @Table(name = "post")
 public class Post {
 
@@ -45,13 +44,5 @@ public class Post {
     @OneToMany
     @JoinColumn(name = "blog_id", referencedColumnName = "id")
     private List<Blog> blog;
-
-    @Builder
-    public void Builder(Long id, Long blogId, String title, String content) {
-        this.id = id;
-        this.blogId = blogId;
-        this.title = title;
-        this.content = content;
-    }
 
 }
