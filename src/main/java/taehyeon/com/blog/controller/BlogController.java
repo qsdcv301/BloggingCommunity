@@ -8,7 +8,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import taehyeon.com.blog.entity.*;
 import taehyeon.com.blog.service.*;
 
@@ -45,7 +44,7 @@ public class BlogController {
                     Long neighborId =
                             neighborService.findByBlogIdAndNeighborBlogId(blogService.findByUserId(userService.findByEmail(userData.getEmail()).getId()).getId(),
                                     blog.getId()).getId();
-                    neighborService.delete(neighborId);
+                    neighborService.deleteById(neighborId);
                     success = true;
                 } else {
                     Neighbor newNeighbor = Neighbor.builder()
@@ -60,7 +59,7 @@ public class BlogController {
                     Long neighborId =
                             neighborService.findByBlogIdAndNeighborBlogId(blogService.findByUserId(userService.findByEmail(customOAuth2User.getEmail()).getId()).getId(),
                                     blog.getId()).getId();
-                    neighborService.delete(neighborId);
+                    neighborService.deleteById(neighborId);
                     success = true;
                 } else {
                     Neighbor newNeighbor = Neighbor.builder()
@@ -168,6 +167,66 @@ public class BlogController {
                     .blogId(blog.getId())
                     .build();
             categoryService.create(newCategory);
+            success = true;
+        } catch (Exception e) {
+            success = false;
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{email}/setting/categoryDelete")
+    public ResponseEntity<Map<String, Boolean>> categoryDelete(@PathVariable String email,
+                                                               @ModelAttribute Category category) {
+        boolean success;
+        try {
+            categoryService.deleteById(category.getId());
+            success = true;
+        } catch (Exception e) {
+            success = false;
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{email}/setting/postDelete")
+    public ResponseEntity<Map<String, Boolean>> postDelete(@PathVariable String email,
+                                                           @ModelAttribute Post post) {
+        boolean success;
+        try {
+            postService.deleteById(post.getId());
+            success = true;
+        } catch (Exception e) {
+            success = false;
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{email}/setting/commentDelete")
+    public ResponseEntity<Map<String, Boolean>> commentDelete(@PathVariable String email,
+                                                              @ModelAttribute Comment comment) {
+        boolean success;
+        try {
+            commentService.deleteById(comment.getId());
+            success = true;
+        } catch (Exception e) {
+            success = false;
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{email}/setting/neighborDelete")
+    public ResponseEntity<Map<String, Boolean>> neighborDelete(@PathVariable String email,
+                                                               @ModelAttribute Neighbor neighbor) {
+        boolean success;
+        try {
+            neighborService.deleteById(neighbor.getId());
             success = true;
         } catch (Exception e) {
             success = false;

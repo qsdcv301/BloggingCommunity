@@ -94,7 +94,9 @@
                                     th:data-name="${category.name}">
                                 편집
                             </button>
-                            <button class="btn btn-sm btn-danger category-del">삭제</button>
+                            <button class="btn btn-sm btn-danger category-del" th:data-type="category"
+                                    th:data-id="${category.id}">삭제
+                            </button>
                         </td>
                     </tr>
                     </tbody>
@@ -127,7 +129,8 @@
                         <td th:text="${#dates.format(post.updatedAt, 'yyyy-MM-dd')}">수정일</td>
                         <td class="text-center">
                             <a href="#" class="btn btn-sm btn-primary">편집</a>
-                            <a href="#" class="btn btn-sm btn-danger post-del">삭제</a>
+                            <a href="#" class="btn btn-sm btn-danger post-del" th:data-type="post"
+                               th:data-id="${post.id}">삭제</a>
                         </td>
                     </tr>
                     </tbody>
@@ -157,7 +160,9 @@
                         <td th:text="${comment.content}">댓글 내용</td>
                         <td th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd')}">작성일</td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-danger comment-del">삭제</button>
+                            <button class="btn btn-sm btn-danger comment-del" th:data-type="comment"
+                                    th:data-id="${comment.id}">삭제
+                            </button>
                         </td>
                     </tr>
                     </tbody>
@@ -182,7 +187,9 @@
                         <td th:text="${neighbor.neighborBlog.user.name}">이름</td>
                         <td th:text="${neighbor.neighborBlog.title}">블로그 제목</td>
                         <td class="text-center">
-                            <button class="btn btn-sm btn-danger neighbor-del">삭제</button>
+                            <button class="btn btn-sm btn-danger neighbor-del" th:data-type="neighbor"
+                                    th:data-id="${neighbor.id}">삭제
+                            </button>
                         </td>
                     </tr>
                     </tbody>

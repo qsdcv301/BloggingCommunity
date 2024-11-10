@@ -23,6 +23,8 @@ $(document).ready(function () {
         });
     });
 
+    // 블로그 셋팅 시작
+
     $(document).on("click", ".blog-edit, .category-edit, .category-create", function () {
         const type = $(this).data("type");
         const id = $(this).data("id");
@@ -46,6 +48,103 @@ $(document).ready(function () {
         }
         // 모달 열기
         $('#editModal').modal("show");
+    });
+
+    $(document).on("click", ".category-del, .post-del, .comment-del .neighbor-del", function () {
+        const urlParts = window.location.pathname.split('/');
+        const email = urlParts[2]; // "/blog/{email}"에서 {email} 부분을 추출
+        const type = $(this).data("type");
+        const id = $(this).data("id");
+
+        if (type === 'category') {
+            if (confirm("정말로 삭제 하시겠습니까?")) {
+                $.ajax({
+                    type: "POST",
+                    url: `/blog/${email}/setting/categoryDelete`,
+                    data: {
+                        id: id,
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert("삭제를 실패했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("서버 오류가 발생했습니다.");
+                    }
+                });
+            } else {
+
+            }
+        } else if (type === 'post') {
+            if (confirm("정말로 삭제 하시겠습니까?")) {
+                $.ajax({
+                    type: "POST",
+                    url: `/blog/${email}/setting/postDelete`,
+                    data: {
+                        id: id,
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert("삭제를 실패했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("서버 오류가 발생했습니다.");
+                    }
+                });
+            } else {
+
+            }
+        } else if (type === 'comment') {
+            if (confirm("정말로 삭제 하시겠습니까?")) {
+                $.ajax({
+                    type: "POST",
+                    url: `/blog/${email}/setting/commentDelete`,
+                    data: {
+                        id: id,
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert("삭제를 실패했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("서버 오류가 발생했습니다.");
+                    }
+                });
+            } else {
+
+            }
+        } else if (type === 'neighbor') {
+            if (confirm("정말로 삭제 하시겠습니까?")) {
+                $.ajax({
+                    type: "POST",
+                    url: `/blog/${email}/setting/neighborDelete`,
+                    data: {
+                        id: id,
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert("삭제를 실패했습니다.");
+                        }
+                    },
+                    error: function () {
+                        alert("서버 오류가 발생했습니다.");
+                    }
+                });
+            } else {
+
+            }
+        }
     });
 
     $("#settingPost").click(function () {
@@ -122,5 +221,7 @@ $(document).ready(function () {
             });
         }
     });
+
+    // 블로그 셋팅 끝
 
 });

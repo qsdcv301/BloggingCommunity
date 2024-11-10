@@ -34,7 +34,7 @@ public class NeighborService {
         return neighborRepository.save(newLike);
     }
 
-    public void delete(Long id) {
+    public void deleteById(Long id) {
         neighborRepository.deleteById(id);
     }
 
