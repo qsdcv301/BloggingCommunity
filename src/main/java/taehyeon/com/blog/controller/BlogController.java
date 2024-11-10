@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import taehyeon.com.blog.entity.*;
 import taehyeon.com.blog.service.*;
 
@@ -111,6 +112,69 @@ public class BlogController {
         model.addAttribute("neighborList", neighborList);
         model.addAttribute("commentList", commentList);
         return "/blog/setting";
+    }
+
+    @PostMapping("/{email}/setting/blogUpdate")
+    public ResponseEntity<Map<String, Boolean>> blogUpdate(@PathVariable String email, @ModelAttribute Blog blog) {
+        boolean success;
+        Blog oldBlog = blogService.findById(blog.getId());
+        try {
+            Blog newBlog = Blog.builder()
+                    .id(oldBlog.getId())
+                    .user(oldBlog.getUser())
+                    .title(blog.getTitle())
+                    .description(blog.getDescription())
+                    .createdAt(oldBlog.getCreatedAt())
+                    .build();
+            blogService.update(newBlog.getId(), newBlog);
+            success = true;
+        } catch (Exception e) {
+            success = false;
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{email}/setting/categoryUpdate")
+    public ResponseEntity<Map<String, Boolean>> categoryUpdate(@PathVariable String email,
+                                                               @ModelAttribute Category category) {
+        boolean success;
+        Category oldCategory = categoryService.findById(category.getId());
+        try {
+            Category newCategory = Category.builder()
+                    .id(oldCategory.getId())
+                    .name(category.getName())
+                    .blogId(oldCategory.getBlogId())
+                    .build();
+            categoryService.update(newCategory.getId(), newCategory);
+            success = true;
+        } catch (Exception e) {
+            success = false;
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{email}/setting/categoryCreate")
+    public ResponseEntity<Map<String, Boolean>> categoryCreate(@PathVariable String email,
+                                                               @ModelAttribute Category category) {
+        boolean success;
+        Blog blog = blogService.findByUserId(userService.findByEmail(email).getId());
+        try {
+            Category newCategory = Category.builder()
+                    .name(category.getName())
+                    .blogId(blog.getId())
+                    .build();
+            categoryService.create(newCategory);
+            success = true;
+        } catch (Exception e) {
+            success = false;
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/blogFirstSetting/{email}")
