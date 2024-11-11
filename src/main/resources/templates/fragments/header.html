@@ -5,6 +5,10 @@
     <div class="container py-3 my-2">
         <div class="row flex-nowrap justify-content-between align-items-center">
             <div class="col-4 pt-1">
+                <a class="text-dark" th:href="@{/blog/{email}(email=${myHome})}">
+                    <i class="bi bi-house-door"></i>
+                </a>
+                <span class="px-2"></span>
                 <a th:if="${myPage}" class="text-dark" th:href="@{/blog/{email}/setting(email=${email})}">
                     <i class="bi bi-gear"></i>
                 </a>
@@ -17,7 +21,7 @@
                 <h2>Blogging Community</h2>
             </div>
             <form action="/blog/findBlog" method="post" class="col-4 d-flex justify-content-end align-items-center">
-                <input id="searchBlogInput" name="searchBlog" type="text" class="form-control-sm">
+                <input id="searchBlogInput" name="searchBlog" type="text" class="form-control-sm" placeholder="abc123@abc.com">
                 <button type="submit" class="ml-2 bg-transparent border-0"><i class="bi bi-search"></i></button>
             </form>
         </div>

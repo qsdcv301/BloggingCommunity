@@ -27,9 +27,9 @@
             </div>
         </div>
         <div class="col-md-6 my-3">
-            <label for="category_id" class="w-label">카테고리</label>
-            <select class="form-control" name="category_id" id="category_id">
-                <option name="category_id" th:each="category : ${categoryList}" th:text="${category.name}" th:value="${category.id}">카테고리 개수</option>
+            <label for="categoryId" class="w-label">카테고리</label>
+            <select class="form-control" name="categoryId" id="categoryId">
+                <option name="categoryId" th:each="category : ${categoryList}" th:text="${category.name}" th:value="${category.id}">카테고리 개수</option>
             </select>
         </div>
         <div class="col-md-12 my-3">

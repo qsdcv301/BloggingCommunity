@@ -8,6 +8,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import taehyeon.com.blog.entity.*;
 import taehyeon.com.blog.service.*;
 
@@ -29,6 +30,56 @@ public class BlogController {
     private final UserService userService;
 
     private final CommentService commentService;
+
+    @ModelAttribute
+    public void findMypage(@PathVariable(required = false) String email, Model model) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            Object principal = authentication.getPrincipal();
+            if (email == null) {
+                email = principal instanceof User user ? user.getEmail() : principal instanceof CustomOAuth2User customOauth2User ? customOauth2User.getEmail() : null;
+            }
+            Blog blog = null;
+            try {
+                blog = blogService.findByUserId(userService.findByEmail(email).getId());
+                if(blog==null){
+                    model.addAttribute("error", "찾을 수 없는 페이지 입니다.");
+                    return;
+                }
+            } catch (Exception e) {
+                model.addAttribute("error", "찾을 수 없는 페이지 입니다.");
+                return;
+            }
+            // User 객체인지 CustomOAuth2User 객체인지 확인
+            if (principal instanceof User userData) {
+                model.addAttribute("myHome", userData.getEmail());
+                if (userData.getEmail().equals(email)) {
+                    model.addAttribute("myPage", true);
+                } else {
+                    model.addAttribute("myPage", false);
+                    if (neighborService.findByBlogIdAndNeighborBlogId(userService.findByEmail(userData.getEmail()).getId(),
+                            blog.getId()) != null) {
+                        model.addAttribute("myNeighbor", true);
+                    } else {
+                        model.addAttribute("myNeighbor", false);
+                    }
+                }
+            } else if (principal instanceof CustomOAuth2User customOAuth2User) {
+                model.addAttribute("myHome", customOAuth2User.getEmail());
+                if (customOAuth2User.getEmail().equals(email)) {
+                    model.addAttribute("myPage", true);
+                } else {
+                    model.addAttribute("myPage", false);
+                    if (neighborService.findByBlogIdAndNeighborBlogId(userService.findByEmail(customOAuth2User.getEmail()).getId(),
+                            blog.getId()) != null) {
+                        model.addAttribute("myNeighbor", true);
+                    } else {
+                        model.addAttribute("myNeighbor", false);
+                    }
+                }
+            }
+        }
+    }
 
     @PostMapping("/{email}/neighbor")
     public ResponseEntity<Map<String, Boolean>> neighbor(@PathVariable String email,
@@ -88,8 +139,17 @@ public class BlogController {
     }
 
     @PostMapping("/findBlog")
-    public String findBlog(@RequestParam(name = "searchBlog") String email, Model model) {
-        return "redirect:/blog/" + email;
+    public String findBlog(@ModelAttribute("error") String error, @RequestParam(name = "searchBlog") String email, Model model) {
+        if (error != null && !error.isEmpty()) {
+            // 예외가 발생한 경우 리다이렉트 처리
+            return "redirect:/error/error";  // 예외가 발생했을 경우 error 페이지로 리다이렉트
+        }
+        try {
+            return "redirect:/blog/" + email;
+        } catch (Exception e) {
+            model.addAttribute("error", "찾을 수 없는 페이지 입니다.");
+            return "redirect:error/error";
+        }
     }
 
     @GetMapping("/{email}/setting")
@@ -103,7 +163,7 @@ public class BlogController {
             commentList.addAll(commentService.findAllByPostId(post.getId()));
         }
         User user = userService.findByEmail(email);
-        model.addAttribute("myPage", true);
+        model.addAttribute("email", email);
         model.addAttribute("user", user);
         model.addAttribute("blog", blog);
         model.addAttribute("postList", postList);
@@ -193,6 +253,7 @@ public class BlogController {
 
     @PostMapping("/{email}/setting/postDelete")
     public ResponseEntity<Map<String, Boolean>> postDelete(@PathVariable String email,
+                                                           @RequestParam(name = "view", required = false) boolean view,
                                                            @ModelAttribute Post post) {
         boolean success;
         try {
@@ -203,6 +264,7 @@ public class BlogController {
         }
         Map<String, Boolean> response = new HashMap<>();
         response.put("success", success);
+        response.put("view", view);
         return ResponseEntity.ok(response);
     }
 
@@ -262,47 +324,21 @@ public class BlogController {
 
     @GetMapping("/{email}")
     public String userBlog(@PathVariable String email, Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
-            Object principal = authentication.getPrincipal();
-            Blog blog = blogService.findByUserId(userService.findByEmail(email).getId());
-            // User 객체인지 CustomOAuth2User 객체인지 확인
-            if (principal instanceof User userData) {
-                if (userData.getEmail().equals(email)) {
-                    model.addAttribute("myPage", true);
-                } else {
-                    model.addAttribute("myPage", false);
-                    if (neighborService.findByBlogIdAndNeighborBlogId(userService.findByEmail(userData.getEmail()).getId(),
-                            blog.getId()) != null) {
-                        model.addAttribute("myNeighbor", true);
-                    } else {
-                        model.addAttribute("myNeighbor", false);
-                    }
-                }
-            } else if (principal instanceof CustomOAuth2User customOAuth2User) {
-                if (customOAuth2User.getEmail().equals(email)) {
-                    model.addAttribute("myPage", true);
-                } else {
-                    model.addAttribute("myPage", false);
-                    if (neighborService.findByBlogIdAndNeighborBlogId(userService.findByEmail(customOAuth2User.getEmail()).getId(),
-                            blog.getId()) != null) {
-                        model.addAttribute("myNeighbor", true);
-                    } else {
-                        model.addAttribute("myNeighbor", false);
-                    }
-                }
-            }
+        try {
+            Blog blog = blogService.findById(userService.findByEmail(email).getId());
+            List<Neighbor> neighborList = neighborService.findAllByBlogId(blog.getId());
+            List<Category> categoryList = categoryService.findAllByBlogId(blog.getId());
+            List<Post> postList = postService.findAllByBlogId(blog.getId());
+            User user = userService.findByEmail(email);
+            model.addAttribute("user", user);
+            model.addAttribute("blog", blog);
+            model.addAttribute("postList", postList);
+            model.addAttribute("categoryList", categoryList);
+            model.addAttribute("neighborList", neighborList);
+        } catch (Exception e) {
+            model.addAttribute("error", "찾을 수 없는 페이지 입니다.");
+            return "error/error";
         }
-        Blog blog = blogService.findById(userService.findByEmail(email).getId());
-        List<Neighbor> neighborList = neighborService.findAllByBlogId(blog.getId());
-        List<Category> categoryList = categoryService.findAllByBlogId(blog.getId());
-        List<Post> postList = postService.findAllByBlogId(blog.getId());
-        User user = userService.findByEmail(email);
-        model.addAttribute("user", user);
-        model.addAttribute("blog", blog);
-        model.addAttribute("postList", postList);
-        model.addAttribute("categoryList", categoryList);
-        model.addAttribute("neighborList", neighborList);
         return "blog";
     }
 
@@ -326,9 +362,9 @@ public class BlogController {
     }
 
     @PostMapping("/{email}/write")
-    public String userBlogWrite(@PathVariable String email, @ModelAttribute Post post,@RequestParam("category_id") Long category_id, Model model) {
+    public String userBlogWrite(@PathVariable String email, @ModelAttribute Post post, @RequestParam("categoryId") Long categoryId, Model model) {
         Blog blog = blogService.findById(userService.findByEmail(email).getId());
-        Category category = categoryService.findById(category_id);
+        Category category = categoryService.findById(categoryId);
         Post newPost = Post.builder()
                 .blog(blog)
                 .title(post.getTitle())
@@ -341,19 +377,36 @@ public class BlogController {
     }
 
     @GetMapping("/{email}/update")
-    public String userBlogUpdate(@PathVariable String email, Model model) {
+    public String userBlogUpdate(@PathVariable String email, @RequestParam("postId") Long id, Model model) {
         Blog blog = blogService.findById(userService.findByEmail(email).getId());
+        List<Category> categoryList = categoryService.findAllByBlogId(blog.getId());
+        Post post = postService.findById(id);
+        model.addAttribute("post", post);
+        model.addAttribute("categoryList", categoryList);
+        model.addAttribute("email", email);
         return "/blog/update";
     }
 
     @PostMapping("/{email}/update")
-    public String userBlogUpdate(@PathVariable String email, @ModelAttribute Blog blog, Model model) {
+    public String userBlogUpdate(@PathVariable String email, @ModelAttribute Post post, @RequestParam("category.id") Long categoryId, Model model) {
+        Blog blog = blogService.findById(userService.findByEmail(email).getId());
+        Category category = categoryService.findById(categoryId);
+        Post newPost = Post.builder()
+                .id(post.getId())
+                .blog(blog)
+                .title(post.getTitle())
+                .category(category)
+                .summary(post.getSummary())
+                .content(post.getContent())
+                .createdAt(post.getCreatedAt())
+                .build();
+        postService.update(post.getId(), newPost);
         return "redirect:/blog/" + email;
     }
 
     @PostMapping("/{email}/delete")
-    public String userBlogDelete(@PathVariable String email, Long id, Model model) {
-        Blog blog = blogService.findById(userService.findByEmail(email).getId());
+    public String userBlogDelete(@PathVariable String email, @RequestParam("postId") Long id, Model model) {
+        postService.deleteById(id);
         return "redirect:/blog/" + email;
     }
 

@@ -56,6 +56,7 @@ $(document).ready(function () {
         const email = urlParts[2]; // "/blog/{email}"에서 {email} 부분을 추출
         const type = $(this).data("type");
         const id = $(this).data("id");
+        const view = $(this).data("view");
 
         if (type === 'category') {
             if (confirm("정말로 삭제 하시겠습니까?")) {
@@ -64,6 +65,7 @@ $(document).ready(function () {
                     url: `/blog/${email}/setting/categoryDelete`,
                     data: {
                         id: id,
+                        view: view,
                     },
                     success: function (response) {
                         if (response.success) {
@@ -86,10 +88,15 @@ $(document).ready(function () {
                     url: `/blog/${email}/setting/postDelete`,
                     data: {
                         id: id,
+                        view: view,
                     },
                     success: function (response) {
                         if (response.success) {
-                            location.reload();
+                            if(response.view){
+                                location.replace( `/blog/${email}`);
+                            }else{
+                                location.reload();
+                            }
                         } else {
                             alert("삭제를 실패했습니다.");
                         }

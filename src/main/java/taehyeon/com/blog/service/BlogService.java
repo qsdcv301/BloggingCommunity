@@ -43,4 +43,9 @@ public class BlogService {
     public Blog findByUserId(Long userId) {
         return blogRepository.findByUserId(userId).orElse(null);
     }
+
+    public Blog findByTitle(String title) {
+        return blogRepository.findByTitle(title).orElse(null);
+    }
+    
 }

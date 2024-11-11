@@ -128,15 +128,15 @@
                         <td th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd')}">작성일</td>
                         <td th:text="${#dates.format(post.updatedAt, 'yyyy-MM-dd')}">수정일</td>
                         <td class="text-center">
-                            <a href="#" class="btn btn-sm btn-primary">편집</a>
-                            <a href="#" class="btn btn-sm btn-danger post-del" th:data-type="post"
-                               th:data-id="${post.id}">삭제</a>
+                            <a th:href="@{/blog/{email}/update?postId={postId}(email=${email}, postId=${post.id})}" class="btn btn-sm btn-primary">수정</a>
+                            <button class="btn btn-sm btn-danger post-del" th:data-type="post"
+                                    th:data-id="${post.id}">삭제</button>
                         </td>
                     </tr>
                     </tbody>
                 </table>
                 <div class="d-flex justify-content-end">
-                    <a href="#" class="btn btn-sm btn-success">글쓰기</a>
+                    <a th:href="@{/blog/{email}/write(email=${user.email})}" class="btn btn-sm btn-success">글쓰기</a>
                 </div>
             </div>
             <h2 id="comment">댓글 관리</h2>

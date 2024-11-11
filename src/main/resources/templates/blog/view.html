@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>BloggingCommunity</title>
+    <title>Blogging Community</title>
     <link rel="canonical" href="https://getbootstrap.kr/docs/5.1/examples/blog/">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
@@ -13,11 +13,43 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/popper.min.js"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <!--    <script src="/js/script.js"></script>-->
+    <script src="/js/script.js"></script>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
-
+<h1 class="text-center my-5">게시물</h1>
+<div class="container">
+    <section class="view">
+        <div class="view-box">
+            <div class="view-head" th:text="${post.title}">
+                <i class="ri-arrow-right-circle-fill"></i>
+            </div>
+            <div class="view-body">
+                <div class="contents-box">
+                    <div class="createAt" th:text="${#dates.format(post.createdAt, 'yyyy-MM-dd')}"><i
+                            class="ri-calendar-2-line"></i></div>
+                    <div class="category" th:text="${post.category.name}"><i class="ri-user-voice-line"></i></div>
+                    <div class="updateAt" th:text="${#dates.format(post.updatedAt, 'yyyy-MM-dd')}"><i
+                            class="ri-anticlockwise-2-line"></i></div>
+                    <div class="summary" th:text="${post.summary}">
+                    </div>
+                </div>
+                <div class="contents" th:text="${post.content}">
+                </div>
+            </div>
+            <div class="view-foot">
+                <a th:href="@{/blog/{email}(email=${email})}" class="btn btn-sm btn-success mr-2">내 블로그</a>
+                <a th:href="@{/blog/{email}/update?postId={postId}(email=${email}, postId=${post.id})}"
+                   class="btn btn-sm btn-primary">수정</a>
+                <button class="btn btn-sm btn-danger mr-2 post-del" th:data-type="post"
+                        th:data-view="true"
+                        th:data-id="${post.id}">삭제
+                </button>
+                <a th:href="@{/blog/{email}/write(email=${email})}" class="btn btn-sm btn-success">글쓰기</a>
+            </div>
+        </div>
+    </section>
+</div>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>
