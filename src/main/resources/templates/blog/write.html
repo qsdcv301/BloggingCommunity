@@ -12,12 +12,45 @@
     <script src="/js/jquery-1.12.4.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/popper.min.js"></script>
-    <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-    <!--    <script src="/js/script.js"></script>-->
+    <script src="/js/script.js"></script>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
-
+<div class="container">
+<div class="bg-white">
+    <h1 class="text-center my-5">글쓰기</h1>
+    <form th:action="@{/blog/{email}/write(email=${email})}" name="write_form" id="write_form" class="row was-valited" method="post">
+        <div class="col-md-6 my-3">
+            <div class="row align-items-center">
+                <label for="title" class="w-label">제목</label>
+                <input type="text" class="form-control" name="title" id="title" required/>
+            </div>
+        </div>
+        <div class="col-md-6 my-3">
+            <label for="category_id" class="w-label">카테고리</label>
+            <select class="form-control" name="category_id" id="category_id">
+                <option name="category_id" th:each="category : ${categoryList}" th:text="${category.name}" th:value="${category.id}">카테고리 개수</option>
+            </select>
+        </div>
+        <div class="col-md-12 my-3">
+            <div class="row align-items-center">
+                <label for="summary" class="w-label">요약</label>
+                <input type="text" class="form-control" name="summary" id="summary" required/>
+            </div>
+        </div>
+        <div class="col-md-12 my-3">
+            <div class="row align-items-center">
+                <label for="content" class="w-label">내용</label>
+                <textarea class="form-control" name="content" id="content" required style="height: 350px"></textarea>
+            </div>
+        </div>
+        <div class="col-md-12 text-center">
+            <button type="reset" class="btn btn-danger mx-2 px-4">초기화</button>
+            <button type="submit" class="btn btn-primary write mx-2 px-4">작성 완료</button>
+        </div>
+    </form>
+</div>
+</div>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

@@ -28,7 +28,7 @@ public class PostService {
     public Post update(Long id, Post post) {
         Post newPost = Post.builder()
                 .id(id)
-                .blogId(post.getBlogId())
+                .blog(post.getBlog())
                 .title(post.getTitle())
                 .summary(post.getSummary())
                 .content(post.getContent())

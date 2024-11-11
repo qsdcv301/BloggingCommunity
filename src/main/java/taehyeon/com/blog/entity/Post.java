@@ -25,9 +25,6 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "blog_id")
-    private Long blogId;
-
     @OneToOne
     @JoinColumn(name = "category_id", referencedColumnName = "id")
     private Category category;
@@ -49,8 +46,8 @@ public class Post {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "blog_id", referencedColumnName = "id")
-    private List<Blog> blog;
+    private Blog blog;
 
 }

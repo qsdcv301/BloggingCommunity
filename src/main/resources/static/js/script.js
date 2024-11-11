@@ -1,4 +1,5 @@
 $(document).ready(function () {
+
     $("#myNeighbor").click(function () {
         let myNeighbor = false;
         myNeighbor = !!$(this).children().hasClass("bi-heart-fill");

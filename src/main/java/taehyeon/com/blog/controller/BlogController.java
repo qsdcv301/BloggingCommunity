@@ -318,11 +318,25 @@ public class BlogController {
     @GetMapping("/{email}/write")
     public String userBlogWrite(@PathVariable String email, Model model) {
         Blog blog = blogService.findById(userService.findByEmail(email).getId());
+        List<Category> categoryList = categoryService.findAllByBlogId(blog.getId());
+
+        model.addAttribute("email", email);
+        model.addAttribute("categoryList", categoryList);
         return "/blog/write";
     }
 
     @PostMapping("/{email}/write")
-    public String userBlogWrite(@PathVariable String email, @ModelAttribute Blog blog, Model model) {
+    public String userBlogWrite(@PathVariable String email, @ModelAttribute Post post,@RequestParam("category_id") Long category_id, Model model) {
+        Blog blog = blogService.findById(userService.findByEmail(email).getId());
+        Category category = categoryService.findById(category_id);
+        Post newPost = Post.builder()
+                .blog(blog)
+                .title(post.getTitle())
+                .category(category)
+                .summary(post.getSummary())
+                .content(post.getContent())
+                .build();
+        postService.create(newPost);
         return "redirect:/blog/" + email;
     }
 
