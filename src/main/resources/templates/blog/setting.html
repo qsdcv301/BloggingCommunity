@@ -84,8 +84,8 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-th-id="${category.id}" th:each="category, index : ${categoryList}">
-                        <td th:text="${index.index+1}">번호</td>
+                    <tr th:each="category, index : ${categoryList}" th:data-id="${category.id}">
+                    <td th:text="${index.index+1}">번호</td>
                         <td th:text="${category.name}">이름</td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-primary category-edit"
@@ -153,9 +153,9 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr data-th-data-id="${comment.id}" th:each="comment, index : ${commentList}">
+                    <tr th:each="comment, index : ${commentList}">
                         <td th:text="${index.index+1}">번호</td>
-                        <td th:text="${postList.get(index.index).title}">첫 번째 게시물</td>
+                        <td th:text="${comment.post.title}">첫 번째 게시물</td>
                         <td th:text="${comment.blog.user.name}">작성자</td>
                         <td th:text="${comment.content}">댓글 내용</td>
                         <td th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd')}">작성일</td>

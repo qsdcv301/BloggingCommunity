@@ -31,6 +31,11 @@ public class BlogController {
 
     private final CommentService commentService;
 
+    public Object findMe() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth.getPrincipal();
+    }
+
     @ModelAttribute
     public void findMypage(@PathVariable(required = false) String email, Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -42,7 +47,7 @@ public class BlogController {
             Blog blog = null;
             try {
                 blog = blogService.findByUserId(userService.findByEmail(email).getId());
-                if(blog==null){
+                if (blog == null) {
                     model.addAttribute("error", "찾을 수 없는 페이지 입니다.");
                     return;
                 }
@@ -344,8 +349,23 @@ public class BlogController {
 
     @GetMapping("/{email}/view")
     public String userBlogView(@PathVariable String email, @RequestParam(name = "postId") Long postId, Model model) {
+        try{
+            Object userData = findMe();
+            if (userData instanceof User) {
+                User user = (User) userData;
+                model.addAttribute("user", user);
+            } else if (userData instanceof CustomOAuth2User) {
+                CustomOAuth2User customOAuth2User = (CustomOAuth2User) userData;
+                model.addAttribute("user", customOAuth2User);
+            }
+        }catch (Exception e) {
+            model.addAttribute("error", "게정 정보가 없습니다.");
+            return "error/error";
+        }
         Blog blog = blogService.findById(userService.findByEmail(email).getId());
         Post post = postService.findById(postId);
+        List<Comment> commentList = commentService.findAllByPostId(postId);
+        model.addAttribute("commentList", commentList);
         model.addAttribute("blog", blog);
         model.addAttribute("post", post);
         return "/blog/view";
@@ -408,6 +428,79 @@ public class BlogController {
     public String userBlogDelete(@PathVariable String email, @RequestParam("postId") Long id, Model model) {
         postService.deleteById(id);
         return "redirect:/blog/" + email;
+    }
+
+    @PostMapping("/{email}/comment/write")
+    public ResponseEntity<Map<String, Boolean>> postWrite(@PathVariable String email, @ModelAttribute Comment comment, @RequestParam("post_id") Long id, Model model) {
+        boolean success;
+        try{
+            Object userData = findMe();
+            String userEmail = null;
+            if (userData instanceof User) {
+                User user = (User) userData;
+                userEmail = user.getEmail();
+            } else if (userData instanceof CustomOAuth2User) {
+                CustomOAuth2User customOAuth2User = (CustomOAuth2User) userData;
+                userEmail = customOAuth2User.getEmail();
+            }
+            Comment newComment = Comment.builder()
+                    .post(postService.findById(id))
+                    .content(comment.getContent())
+                    .blog(blogService.findByUserId(userService.findByEmail(userEmail).getId()))
+                    .build();
+            commentService.create(newComment);
+             success = true;
+        }catch (Exception e) {
+             success = false;
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{email}/comment/update")
+    public ResponseEntity<Map<String, Boolean>> postUpdate(@PathVariable String email, @ModelAttribute Comment comment, Model model) {
+        boolean success;
+        try{
+            Object userData = findMe();
+            String userEmail = null;
+            if (userData instanceof User) {
+                User user = (User) userData;
+                userEmail = user.getEmail();
+            } else if (userData instanceof CustomOAuth2User) {
+                CustomOAuth2User customOAuth2User = (CustomOAuth2User) userData;
+                userEmail = customOAuth2User.getEmail();
+            }
+            Comment oldComment = commentService.findById(comment.getId());
+            Comment newComment = Comment.builder()
+                    .id(oldComment.getId())
+                    .post(oldComment.getPost())
+                    .content(comment.getContent())
+                    .createdAt(oldComment.getCreatedAt())
+                    .blog(oldComment.getBlog())
+                    .build();
+            commentService.update(oldComment.getId(), newComment);
+            success = true;
+        }catch (Exception e) {
+            success = false;
+        }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/{email}/comment/delete")
+    public ResponseEntity<Map<String, Boolean>> postWrite(@PathVariable String email, @RequestParam("id") Long id, Model model) {
+       boolean success;
+        try{
+           commentService.deleteById(id);
+            success = true;
+       } catch (Exception e) {
+           success = false;
+       }
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("success", success);
+        return ResponseEntity.ok(response);
     }
 
 }

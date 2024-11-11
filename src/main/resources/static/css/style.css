@@ -16,6 +16,7 @@ section.view {
 }
 
 .view-box {
+    position: relative;
     background: #fff;
     min-height: 600px;
     border-radius: 5px;
@@ -68,4 +69,9 @@ section.view {
     padding: 40px;
     text-align: right;
     bottom: 0;
+}
+
+.comment-box{
+    display: flex;
+    padding: 10px 30px 50px;
 }

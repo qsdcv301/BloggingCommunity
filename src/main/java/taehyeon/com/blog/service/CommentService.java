@@ -28,7 +28,7 @@ public class CommentService {
     public Comment update(Long id, Comment comment) {
         Comment newComment = Comment.builder()
                 .id(id)
-                .postId(comment.getPostId())
+                .post(comment.getPost())
                 .blog(comment.getBlog())
                 .content(comment.getContent())
                 .build();

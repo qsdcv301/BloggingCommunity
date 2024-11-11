@@ -37,7 +37,7 @@
                 <div class="contents" th:text="${post.content}">
                 </div>
             </div>
-            <div class="view-foot">
+            <div th:if="${myPage}" class="view-foot">
                 <a th:href="@{/blog/{email}(email=${email})}" class="btn btn-sm btn-success mr-2">내 블로그</a>
                 <a th:href="@{/blog/{email}/update?postId={postId}(email=${email}, postId=${post.id})}"
                    class="btn btn-sm btn-primary">수정</a>
@@ -46,6 +46,41 @@
                         th:data-id="${post.id}">삭제
                 </button>
                 <a th:href="@{/blog/{email}/write(email=${email})}" class="btn btn-sm btn-success">글쓰기</a>
+            </div>
+        </div>
+        <div class="view-box">
+            <!-- 댓글 작성 폼 추가 -->
+            <div class="view-head mt-4">
+                <div class="w-100">
+                    <div class="mb-3">
+                        <label for="commentContent" class="form-label">댓글 작성</label>
+                        <textarea id="commentContent" class="form-control" name="content" rows="5"
+                                  placeholder="댓글을 작성하세요." required></textarea>
+                        <input type="hidden" id="comment-post-id" name="post_id" th:value="${post.id}">
+                    </div>
+                    <button class="btn btn-primary comment-create">댓글 달기</button>
+                </div>
+            </div>
+            <!-- 댓글 목록 -->
+            <div class="comment-box mt-5 flex-column">
+                <h3>댓글</h3>
+                <div class="d-flex flex-column flex-wrap justify-content-center align-content-start">
+                    <div class="comment-item ml-5 mt-3 card col-10 p-0" th:each="comment : ${commentList}">
+                        <div class="d-flex justify-content-start flex-column card-header p-2">
+                            <div class="d-flex justify-content-between comment-value">
+                                <span th:text="${#dates.format(comment.createdAt, 'yyyy-MM-dd')}"></span>
+                                <input type="hidden" name="post_id" class="comment-id" th:value="${comment.id}">
+                                <div th:if="${comment.blog.user.email==user.email}">
+                                    <button class="btn btn-success comment-updateReady">수정</button>
+                                    <button class="btn btn-danger comment-delete">삭제</button>
+                                </div>
+                            </div>
+                            <p class="mb-0"><span class="comment-name mr-2" th:text="${comment.blog.user.name}"></span>
+                                <span class="comment-email" th:text="${comment.blog.user.email}"></span></p>
+                        </div>
+                        <p class="comment-content card-body p-2" th:text="${comment.content}"></p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
