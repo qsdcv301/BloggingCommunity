@@ -23,7 +23,7 @@
                 <p class="text-white-50 mt-2 mb-5">서비스 사용을 위해 블로그 초기 설정을 해주세요!</p>
 
                 <div class="mb-2">
-                    <form th:action="@{/blog/blogSetting/{email}(email=${email})}" method="POST">
+                    <form th:action="@{/blog/blogSetting/{email}(email=${email})}" method="POST" enctype="multipart/form-data">
                         <!-- 토큰을 추가하여 CSRF 공격 방지 -->
                         <input type="hidden" th:name="${_csrf?.parameterName}" th:value="${_csrf?.token}"/>
                         <div class="mb-3">
@@ -38,6 +38,11 @@
                             <label for="name" class="form-label text-white">카테고리 하나를 입력하세요</label>
                             <input id="name" type="text" class="form-control" name="name">
                         </div>
+                        <div class="mb-3">
+                            <label for="file" class="form-label text-white">블로그 썸네일 하나를 선택해주세요</label>
+                            <input class="form-control" id="file" type="file" name="file" />
+                        </div>
+
                         <button type="submit" class="btn btn-primary">설정완료</button>
                     </form>
                 </div>

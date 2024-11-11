@@ -11,11 +11,15 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import taehyeon.com.blog.entity.CustomOAuth2User;
 import taehyeon.com.blog.entity.User;
 import taehyeon.com.blog.service.BlogService;
 import taehyeon.com.blog.service.UserService;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -58,8 +62,8 @@ public class UserController {
         String provider = user.getProvider();
         String email = user.getEmail();
         String name = user.getName();
-        User findUser = userService.findByEmail(email);
-        if (findUser.getEmail() == null) {
+        User findUser = null;
+        if (userService.findByEmail(email) == null) {
             // 새로운 User 객체 생성
             User newUser = User.builder()
                     .provider(provider)

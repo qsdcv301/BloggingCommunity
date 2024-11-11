@@ -10,11 +10,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.multipart.MultipartFile;
 import taehyeon.com.blog.entity.*;
 import taehyeon.com.blog.service.*;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -309,7 +312,7 @@ public class BlogController {
     }
 
     @GetMapping("/blogFirstSetting/{email}")
-    public String blogFirstSetting(@PathVariable String email, Model model) {
+    public String blogFirstSetting(@PathVariable String email, Model model){
         model.addAttribute("email", email);
         return "blogFirstSetting";
     }
@@ -317,7 +320,9 @@ public class BlogController {
     @PostMapping("/blogSetting/{email}")
     public String blogSettingOk(@PathVariable String email, @ModelAttribute Blog blog,
                                 @ModelAttribute Category category,
-                                Model model) {
+                                @RequestParam("file") MultipartFile file,
+                                Model model) throws IOException {
+//        uploadFile(file);
         User user = userService.findByEmail(email);
         Blog newBlog = Blog.builder()
                 .user(user)
@@ -335,7 +340,7 @@ public class BlogController {
 
     @GetMapping("/{email}")
     public String userBlog(@PathVariable String email, @RequestParam(defaultValue = "0", required = false) int page,
-                           @RequestParam(defaultValue = "5" , required = false) int size,
+                           @RequestParam(defaultValue = "5", required = false) int size,
                            @RequestParam(name = "category", required = false) Long categoryBtn,
                            Model model) {
         try {
@@ -349,7 +354,7 @@ public class BlogController {
                 posts = postService.findAllByBlogId(blog.getId(), pageable);
             } else {
                 posts = postService.findAllByBlogIdAndCategoryId(blog.getId(), categoryBtn, pageable);
-            model.addAttribute("categoryBtn", categoryBtn);
+                model.addAttribute("categoryBtn", categoryBtn);
             }
             List<Post> postList = posts.getContent();
 //            int totalPages = posts.getTotalPages();
