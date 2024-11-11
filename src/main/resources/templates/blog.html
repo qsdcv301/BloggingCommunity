@@ -13,7 +13,7 @@
     <script src="/js/bootstrap.min.js"></script>
     <script src="/js/popper.min.js"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
-        <script src="/js/script.js"></script>
+    <script src="/js/script.js"></script>
 </head>
 <body>
 <header th:replace="~{fragments/header :: header}"></header>
@@ -32,13 +32,15 @@
             </h3>
             <div class="nav-scroller pb-3 py-2 mb-2 border-bottom">
                 <nav class="nav d-flex justify-content-start">
-                    <button class="btn btn-primary px-3 mx-2"
-                            th:text="전체">전체 카테고리
-                    </button>
-                    <!--      카테고리 최대 6개 제한      -->
-                    <button class="btn btn-primary px-3 mx-2" th:each="category : ${categoryList}"
-                            th:text="${category.name}">카테고리 이름
-                    </button>
+                    <a class="btn btn-primary px-3 mx-2"
+                       th:href="@{/blog/{email}(email=${email}, page=0, size=${page.size})}"
+                       th:text="전체">전체 카테고리
+                    </a>
+                    <!-- 카테고리 최대 6개 제한 -->
+                    <a class="btn btn-primary px-3 mx-2" th:each="category : ${categoryList}"
+                       th:href="@{/blog/{email}(email=${email}, page=0, size=${page.size}, category=${category.id})}"
+                       th:text="${category.name}">카테고리 이름
+                    </a>
                     <!--      카테고리 최대 6개 제한      -->
                 </nav>
             </div>
@@ -59,9 +61,55 @@
                 </div>
             </th:block>
             <!--      루프 끝 제한 5개?      -->
-            <nav class="d-flex justify-content-center">
-                <p>페이징</p>
-            </nav>
+            <div class="d-flex justify-content-center">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <!-- 첫 페이지 버튼 -->
+                        <li class="page-item" th:classappend="${page.first} ? 'disabled' : ''">
+                            <a class="page-link" th:href="@{/blog/{email}(email=${email}, page=0, size=${page.size}, category=${categoryBtn})}"
+                               aria-label="First">
+                                << First
+                            </a>
+                        </li>
+
+                        <!-- 이전 페이지 버튼 -->
+                        <li class="page-item" th:classappend="${page.hasPrevious} ? '' : 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/blog/{email}(email=${email}, page=${page.number - 1}, size=${page.size}, category=${categoryBtn})}"
+                               aria-label="Previous">
+                                Previous
+                            </a>
+                        </li>
+
+                        <!-- 페이지 번호 버튼 (한눈에 보이는 페이지 수는 5개) -->
+                        <li class="page-item"
+                            th:each="i : ${#numbers.sequence(page.number > 2 ? page.number - 2 : 0, page.number + 2 < page.totalPages ? page.number + 2 : page.totalPages - 1)}"
+                            th:classappend="${page.number == i} ? 'active' : ''">
+                            <a class="page-link"
+                               th:href="@{/blog/{email}(email=${email}, page=${i}, size=${page.size}, category=${categoryBtn})}"
+                               th:text="${i + 1}"></a>
+                        </li>
+
+                        <!-- 다음 페이지 버튼 -->
+                        <li class="page-item" th:classappend="${page.hasNext} ? '' : 'disabled'">
+                            <a class="page-link"
+                               th:href="@{/blog/{email}(email=${email},page=${page.number + 1}, size=${page.size}, category=${categoryBtn})}"
+                               aria-label="Next">
+                                Next
+                            </a>
+                        </li>
+
+                        <!-- 맨 뒤 페이지 버튼 -->
+                        <li class="page-item" th:classappend="${page.last} ? 'disabled' : ''">
+                            <a class="page-link"
+                               th:href="@{/blog/{email}(email=${email},page=${page.totalPages - 1}, size=${page.size}, category=${categoryBtn})}"
+                               aria-label="Last">
+                                Last >>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
             <nav th:if="${myPage}" class="d-flex justify-content-end">
                 <a class="btn btn-outline-success" th:href="@{/blog/{email}/write(email=${user.email})}">글쓰기</a>
             </nav>

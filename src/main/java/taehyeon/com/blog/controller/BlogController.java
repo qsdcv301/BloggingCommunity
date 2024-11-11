@@ -1,6 +1,9 @@
 package taehyeon.com.blog.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -42,7 +45,8 @@ public class BlogController {
         if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
             Object principal = authentication.getPrincipal();
             if (email == null) {
-                email = principal instanceof User user ? user.getEmail() : principal instanceof CustomOAuth2User customOauth2User ? customOauth2User.getEmail() : null;
+                email = principal instanceof User user ? user.getEmail() :
+                        principal instanceof CustomOAuth2User customOauth2User ? customOauth2User.getEmail() : null;
             }
             Blog blog = null;
             try {
@@ -144,7 +148,8 @@ public class BlogController {
     }
 
     @PostMapping("/findBlog")
-    public String findBlog(@ModelAttribute("error") String error, @RequestParam(name = "searchBlog") String email, Model model) {
+    public String findBlog(@ModelAttribute("error") String error, @RequestParam(name = "searchBlog") String email,
+                           Model model) {
         if (error != null && !error.isEmpty()) {
             // 예외가 발생한 경우 리다이렉트 처리
             return "redirect:/error/error";  // 예외가 발생했을 경우 error 페이지로 리다이렉트
@@ -311,7 +316,8 @@ public class BlogController {
 
     @PostMapping("/blogSetting/{email}")
     public String blogSettingOk(@PathVariable String email, @ModelAttribute Blog blog,
-                                @ModelAttribute Category category, Model model) {
+                                @ModelAttribute Category category,
+                                Model model) {
         User user = userService.findByEmail(email);
         Blog newBlog = Blog.builder()
                 .user(user)
@@ -328,15 +334,30 @@ public class BlogController {
     }
 
     @GetMapping("/{email}")
-    public String userBlog(@PathVariable String email, Model model) {
+    public String userBlog(@PathVariable String email, @RequestParam(defaultValue = "0", required = false) int page,
+                           @RequestParam(defaultValue = "5" , required = false) int size,
+                           @RequestParam(name = "category", required = false) Long categoryBtn,
+                           Model model) {
         try {
             Blog blog = blogService.findById(userService.findByEmail(email).getId());
             List<Neighbor> neighborList = neighborService.findAllByBlogId(blog.getId());
             List<Category> categoryList = categoryService.findAllByBlogId(blog.getId());
-            List<Post> postList = postService.findAllByBlogId(blog.getId());
+            Pageable pageable = PageRequest.of(page, size);
+            Page<Post> posts = null;
+            System.out.println(categoryBtn);
+            if (categoryBtn == null) {
+                posts = postService.findAllByBlogId(blog.getId(), pageable);
+            } else {
+                posts = postService.findAllByBlogIdAndCategoryId(blog.getId(), categoryBtn, pageable);
+            model.addAttribute("categoryBtn", categoryBtn);
+            }
+            List<Post> postList = posts.getContent();
+//            int totalPages = posts.getTotalPages();
+//            long totalItems = posts.getTotalElements();
             User user = userService.findByEmail(email);
             model.addAttribute("user", user);
             model.addAttribute("blog", blog);
+            model.addAttribute("page", posts);
             model.addAttribute("postList", postList);
             model.addAttribute("categoryList", categoryList);
             model.addAttribute("neighborList", neighborList);
@@ -349,7 +370,7 @@ public class BlogController {
 
     @GetMapping("/{email}/view")
     public String userBlogView(@PathVariable String email, @RequestParam(name = "postId") Long postId, Model model) {
-        try{
+        try {
             Object userData = findMe();
             if (userData instanceof User) {
                 User user = (User) userData;
@@ -358,7 +379,7 @@ public class BlogController {
                 CustomOAuth2User customOAuth2User = (CustomOAuth2User) userData;
                 model.addAttribute("user", customOAuth2User);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             model.addAttribute("error", "게정 정보가 없습니다.");
             return "error/error";
         }
@@ -382,7 +403,8 @@ public class BlogController {
     }
 
     @PostMapping("/{email}/write")
-    public String userBlogWrite(@PathVariable String email, @ModelAttribute Post post, @RequestParam("categoryId") Long categoryId, Model model) {
+    public String userBlogWrite(@PathVariable String email, @ModelAttribute Post post,
+                                @RequestParam("categoryId") Long categoryId, Model model) {
         Blog blog = blogService.findById(userService.findByEmail(email).getId());
         Category category = categoryService.findById(categoryId);
         Post newPost = Post.builder()
@@ -408,7 +430,8 @@ public class BlogController {
     }
 
     @PostMapping("/{email}/update")
-    public String userBlogUpdate(@PathVariable String email, @ModelAttribute Post post, @RequestParam("category.id") Long categoryId, Model model) {
+    public String userBlogUpdate(@PathVariable String email, @ModelAttribute Post post,
+                                 @RequestParam("category.id") Long categoryId, Model model) {
         Blog blog = blogService.findById(userService.findByEmail(email).getId());
         Category category = categoryService.findById(categoryId);
         Post newPost = Post.builder()
@@ -431,9 +454,10 @@ public class BlogController {
     }
 
     @PostMapping("/{email}/comment/write")
-    public ResponseEntity<Map<String, Boolean>> postWrite(@PathVariable String email, @ModelAttribute Comment comment, @RequestParam("post_id") Long id, Model model) {
+    public ResponseEntity<Map<String, Boolean>> postWrite(@PathVariable String email, @ModelAttribute Comment comment
+            , @RequestParam("post_id") Long id, Model model) {
         boolean success;
-        try{
+        try {
             Object userData = findMe();
             String userEmail = null;
             if (userData instanceof User) {
@@ -449,9 +473,9 @@ public class BlogController {
                     .blog(blogService.findByUserId(userService.findByEmail(userEmail).getId()))
                     .build();
             commentService.create(newComment);
-             success = true;
-        }catch (Exception e) {
-             success = false;
+            success = true;
+        } catch (Exception e) {
+            success = false;
         }
         Map<String, Boolean> response = new HashMap<>();
         response.put("success", success);
@@ -459,9 +483,10 @@ public class BlogController {
     }
 
     @PostMapping("/{email}/comment/update")
-    public ResponseEntity<Map<String, Boolean>> postUpdate(@PathVariable String email, @ModelAttribute Comment comment, Model model) {
+    public ResponseEntity<Map<String, Boolean>> postUpdate(@PathVariable String email,
+                                                           @ModelAttribute Comment comment, Model model) {
         boolean success;
-        try{
+        try {
             Object userData = findMe();
             String userEmail = null;
             if (userData instanceof User) {
@@ -481,7 +506,7 @@ public class BlogController {
                     .build();
             commentService.update(oldComment.getId(), newComment);
             success = true;
-        }catch (Exception e) {
+        } catch (Exception e) {
             success = false;
         }
         Map<String, Boolean> response = new HashMap<>();
@@ -490,14 +515,15 @@ public class BlogController {
     }
 
     @PostMapping("/{email}/comment/delete")
-    public ResponseEntity<Map<String, Boolean>> postWrite(@PathVariable String email, @RequestParam("id") Long id, Model model) {
-       boolean success;
-        try{
-           commentService.deleteById(id);
+    public ResponseEntity<Map<String, Boolean>> postWrite(@PathVariable String email, @RequestParam("id") Long id,
+                                                          Model model) {
+        boolean success;
+        try {
+            commentService.deleteById(id);
             success = true;
-       } catch (Exception e) {
-           success = false;
-       }
+        } catch (Exception e) {
+            success = false;
+        }
         Map<String, Boolean> response = new HashMap<>();
         response.put("success", success);
         return ResponseEntity.ok(response);

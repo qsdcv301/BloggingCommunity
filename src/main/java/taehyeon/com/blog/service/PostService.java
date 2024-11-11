@@ -1,6 +1,8 @@
 package taehyeon.com.blog.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import taehyeon.com.blog.entity.Post;
 import taehyeon.com.blog.repository.PostRepository;
@@ -43,6 +45,14 @@ public class PostService {
 
     public List<Post> findAllByBlogId(Long blogId) {
         return postRepository.findAllByBlogId(blogId);
+    }
+
+    public Page<Post> findAllByBlogId(Long blogId, Pageable pageable) {
+        return postRepository.findAllByBlogId(blogId, pageable);
+    }
+
+    public Page<Post> findAllByBlogIdAndCategoryId(Long blogId, Long categoryId, Pageable pageable) {
+        return postRepository.findAllByBlogIdAndCategoryId(blogId, categoryId, pageable);
     }
 
 }
