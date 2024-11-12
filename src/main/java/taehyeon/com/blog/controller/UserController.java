@@ -62,9 +62,12 @@ public class UserController {
         String provider = user.getProvider();
         String email = user.getEmail();
         String name = user.getName();
-        User findUser = null;
-        if (userService.findByEmail(email) == null) {
-            // 새로운 User 객체 생성
+
+        // 기존 사용자 검색
+        User findUser = userService.findByEmail(email);
+
+        // 사용자가 존재하지 않을 경우 새로운 사용자 생성
+        if (findUser == null) {
             User newUser = User.builder()
                     .provider(provider)
                     .email(email)
@@ -73,7 +76,9 @@ public class UserController {
             userService.create(newUser);
             findUser = newUser;
         }
-        if (blogService.findByUserId(Objects.requireNonNull(findUser).getId()) == null) {
+
+        // 블로그 설정 여부에 따라 리다이렉트
+        if (blogService.findByUserId(findUser.getId()) == null) {
             return "redirect:/blog/blogFirstSetting/" + email;
         }
         return "redirect:/blog/" + email;
