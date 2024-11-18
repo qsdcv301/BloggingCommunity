@@ -1,7 +1,6 @@
 package taehyeon.com.blog.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import taehyeon.com.blog.entity.User;

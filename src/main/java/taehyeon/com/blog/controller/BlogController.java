@@ -357,8 +357,6 @@ public class BlogController {
                 model.addAttribute("categoryBtn", categoryBtn);
             }
             List<Post> postList = posts.getContent();
-//            int totalPages = posts.getTotalPages();
-//            long totalItems = posts.getTotalElements();
             User user = userService.findByEmail(email);
             model.addAttribute("user", user);
             model.addAttribute("blog", blog);

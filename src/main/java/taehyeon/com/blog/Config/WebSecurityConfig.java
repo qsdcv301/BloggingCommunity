@@ -11,8 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import taehyeon.com.blog.service.UserDetailService;
 
 @RequiredArgsConstructor
@@ -27,7 +25,7 @@ public class WebSecurityConfig {
     // 스프링 시큐리티 기능 비활성화 구역
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/static/**");
+        return (web) -> web.ignoring().requestMatchers("/static/**", "/images/**");
     }
 
     // 특정 HTTP 요청에 대한 웹 기반 보안 구성
@@ -36,7 +34,7 @@ public class WebSecurityConfig {
         http
                 // 인증 인가 설정
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/signup", "/user", "/oauth2/**").permitAll() // OAuth2 로그인 경로 허용
+                        .requestMatchers("/login", "/signup", "/user", "/oauth2/**", "/images/**").permitAll() // OAuth2 로그인 경로 허용 및 이미지 경로 허용
                         .anyRequest().authenticated()
                 )
                 // 폼 기반 로그인 설정
