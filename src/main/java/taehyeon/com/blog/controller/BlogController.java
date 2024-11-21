@@ -36,6 +36,7 @@ public class BlogController {
     private final UserService userService;
 
     private final CommentService commentService;
+    private final FileUploadService fileUploadService;
 
     public Object findMe() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -318,11 +319,13 @@ public class BlogController {
     }
 
     @PostMapping("/blogSetting/{email}")
-    public String blogSettingOk(@PathVariable String email, @ModelAttribute Blog blog,
-                                @ModelAttribute Category category,
+    public ResponseEntity<Map<String, Boolean>> blogSettingOk(@PathVariable String email, @ModelAttribute Blog blog,
+                                @RequestParam(name = "category") String category,
+                                @RequestParam(name = "imageType") String imageType,
                                 @RequestParam("file") MultipartFile file,
                                 Model model) throws IOException {
-//        uploadFile(file);
+        Map<String, Boolean> response = new HashMap<>();
+
         User user = userService.findByEmail(email);
         Blog newBlog = Blog.builder()
                 .user(user)
@@ -332,10 +335,12 @@ public class BlogController {
         Blog createBlog = blogService.create(newBlog);
         Category newCategory = Category.builder()
                 .blogId(createBlog.getId())
-                .name(category.getName())
+                .name(category)
                 .build();
         categoryService.create(newCategory);
-        return "redirect:/blog/" + email;
+        fileUploadService.uploadFile(file, email, imageType);
+        response.put("success", true);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{email}")
@@ -358,6 +363,8 @@ public class BlogController {
             }
             List<Post> postList = posts.getContent();
             User user = userService.findByEmail(email);
+            String thumbnailImage= fileUploadService.findImageFilePath(email,"thumbnail");
+            model.addAttribute("thumbnailImage", thumbnailImage);
             model.addAttribute("user", user);
             model.addAttribute("blog", blog);
             model.addAttribute("page", posts);

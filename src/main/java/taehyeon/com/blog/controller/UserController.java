@@ -11,16 +11,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import taehyeon.com.blog.entity.CustomOAuth2User;
 import taehyeon.com.blog.entity.User;
 import taehyeon.com.blog.service.BlogService;
 import taehyeon.com.blog.service.UserService;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Objects;
 
 @RequiredArgsConstructor
 @Controller
@@ -42,8 +36,10 @@ public class UserController {
     @PostMapping("/signup")
     public String signup(@ModelAttribute User user, Model model) {
         if (userService.findByEmail(user.getEmail()) == null) {
+            user.setProvider("local");
+            user.setName("test");
             userService.create(user);
-            return "redirect:/login";
+            return "redirect:/blog/blogFirstSetting/"+user.getEmail();
         } else {
             model.addAttribute("error", "이메일이 중복되어 생성이 불가합니다.");
             return "error/error";
